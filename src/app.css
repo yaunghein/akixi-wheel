@@ -1,3 +1,48 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
+
+.key {
+	@apply !flex !items-center !justify-center;
+}
+
+@font-face {
+	font-family: 'AperturaRegular';
+	src: url('/fonts/apertura-regular.otf') format('opentype');
+}
+@font-face {
+	font-family: 'AperturaMedium';
+	src: url('/fonts/apertura-medium.otf') format('opentype');
+}
+@font-face {
+	font-family: 'AperturaBlack';
+	src: url('/fonts/apertura-black.otf') format('opentype');
+}
+@layer base {
+	body {
+		font-family: 'AperturaRegular', sans-serif;
+	}
+
+	/* Hide scrollbar for Chrome, Safari and Opera */
+	.hide-scrollbar::-webkit-scrollbar {
+		display: none;
+	}
+
+	/* Hide scrollbar for IE, Edge and Firefox */
+	.hide-scrollbar {
+		-ms-overflow-style: none; /* IE and Edge */
+		scrollbar-width: none; /* Firefox */
+	}
+}
+
+:root {
+	--font-apertura-regular: 'AperturaRegular', sans-serif;
+	--font-apertura-medium: 'AperturaMedium', sans-serif;
+	--font-apertura-black: 'AperturaBlack', sans-serif;
+
+	--color-oxford-blue: #00001e;
+	--color-electric-indigo: #4450ff;
+	--color-aquamarineo: #22f4ad;
+	--color-vivid-sky: #1cd2fa;
+	--color-tomato: #f1515d;
+}

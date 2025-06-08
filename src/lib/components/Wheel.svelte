@@ -1,17 +1,103 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { GAME_STATES, type TGameState } from '$lib/constants';
 
-	let { segmentColor = $bindable() } = $props();
+	let {
+		segmentColor = $bindable(),
+		gameState = $bindable(),
+		finalSegment = $bindable()
+	} = $props();
+
+	type QuizQuestion = {
+		text: string;
+		choices: [string, string, string];
+		correct: 'A' | 'B' | 'C';
+		explanation: string;
+	};
+
+	type WheelSegment = {
+		text: string;
+		color: string;
+		question: QuizQuestion;
+	};
 
 	// Sample data structure (this would come from CMS in production)
-	const wheelData = [
-		{ text: 'Free Coffee', color: '#FF6B6B' },
-		{ text: '10% Discount', color: '#4ECDC4' },
-		{ text: 'Free Consultation Call', color: '#45B7D1' },
-		{ text: 'Buy One Get One Free', color: '#96CEB4' },
-		{ text: 'Mystery Prize Inside', color: '#FFEEAD' },
-		{ text: '$25 Voucher Code', color: '#D4A5A5' },
-		{ text: 'Exclusive Gift Box Offer', color: '#9B59B6' }
+	const wheelData: WheelSegment[] = [
+		{
+			text: 'Missed Call Recovery',
+			color: '#2fffa3', // greenish
+			question: {
+				text: '“Does Teams tell you which missed calls were never returned?”',
+				choices: ['YES', 'NO', 'Only via a third-party tool'],
+				correct: 'C',
+				explanation:
+					'Only Akixi fills this gap with real-time missed call tracking, optimising revenue and customer satisfaction.'
+			}
+		},
+		{
+			text: 'Call Tagging & Categorisation',
+			color: '#2fd6ff', // cyan
+			question: {
+				text: 'Which feature helps you recover missed sales opportunities?',
+				choices: ['Missed Call Recovery', 'Call Recording', 'Voicemail'],
+				correct: 'A',
+				explanation:
+					'Missed Call Recovery helps you recover missed sales opportunities by tracking and alerting you to missed calls.'
+			}
+		},
+		{
+			text: 'Custom Dashboards',
+			color: '#3b82f6', // blue
+			question: {
+				text: 'What is the main benefit of real-time missed call tracking?',
+				choices: ['Faster internet', 'Optimised revenue', 'Cheaper calls'],
+				correct: 'B',
+				explanation:
+					'Real-time missed call tracking helps optimise revenue and customer satisfaction.'
+			}
+		},
+		{
+			text: 'Akixi Reporting',
+			color: '#45B7D1', // light blue
+			question: {
+				text: 'Which of these is a third-party tool for Teams?',
+				choices: ['Akixi', 'Excel', 'Paint'],
+				correct: 'A',
+				explanation:
+					'Akixi is a third-party tool that integrates with Teams for advanced reporting.'
+			}
+		},
+		{
+			text: 'History Reporting',
+			color: '#4ECDC4', // teal
+			question: {
+				text: 'What does Akixi help you track?',
+				choices: ['Missed calls', 'Emails', 'SMS'],
+				correct: 'A',
+				explanation:
+					'Akixi helps you track missed calls, providing valuable insights for your business.'
+			}
+		},
+		{
+			text: 'Voicemail',
+			color: '#96CEB4', // light green
+			question: {
+				text: 'Which is NOT a feature of Akixi?',
+				choices: ['Missed Call Recovery', 'Weather Forecast', 'Real-time Analytics'],
+				correct: 'B',
+				explanation: 'Weather Forecast is not a feature of Akixi.'
+			}
+		},
+		{
+			text: 'Call Outcomes',
+			color: '#5eead4', // teal
+			question: {
+				text: 'Which feature helps you track the result of each call?',
+				choices: ['Call Outcomes', 'Voicemail', 'Custom Dashboards'],
+				correct: 'A',
+				explanation: 'Call Outcomes helps you track the result of each call for better analytics.'
+			}
+		}
 	];
 
 	let canvas: HTMLCanvasElement;
@@ -19,8 +105,9 @@
 	let rotation = $state(0);
 	let isSpinning = $state(false);
 	let spinSpeed = $state(0);
-	let spinDeceleration = $state(0.995);
+	let spinDeceleration = $state(0.996);
 	let lastTimestamp = $state(0);
+	let fontLoaded = $state(false);
 
 	segmentColor = wheelData[0].color;
 
@@ -32,7 +119,20 @@
 		canvas.width = rect.width * dpr;
 		canvas.height = rect.height * dpr;
 		ctx.scale(dpr, dpr);
-		drawWheel();
+
+		// Load the font
+		const font = new FontFace('AperturaBlack', 'url(/fonts/apertura-black.otf)');
+		font
+			.load()
+			.then(() => {
+				document.fonts.add(font);
+				fontLoaded = true;
+				drawWheel();
+			})
+			.catch((err) => {
+				console.error('Font loading failed:', err);
+				drawWheel(); // Fallback to default font
+			});
 	});
 
 	function drawWheel() {
@@ -69,7 +169,7 @@
 
 			// Scale font size based on radius
 			const baseFontSize = radius * 0.06; // 6% of radius
-			ctx.font = `bold ${baseFontSize}px Arial`;
+			ctx.font = `bold ${baseFontSize}px ${fontLoaded ? 'AperturaBlack' : 'Arial'}`;
 
 			const maxTextWidth = radius * 0.7; // 70% of radius
 			const words = segment.text.split(' ');
@@ -102,19 +202,6 @@
 		ctx.fillStyle = '#fff';
 		ctx.fill();
 		ctx.stroke();
-
-		// Draw pointer triangle at the top
-		ctx.save();
-		ctx.translate(centerX, 0);
-		ctx.beginPath();
-		const pointerSize = radius * 0.04; // 4% of radius
-		ctx.moveTo(-pointerSize, 0);
-		ctx.lineTo(pointerSize, 0);
-		ctx.lineTo(0, pointerSize * 1.5);
-		ctx.closePath();
-		ctx.fillStyle = '#333';
-		ctx.fill();
-		ctx.restore();
 	}
 
 	function animate(timestamp: number) {
@@ -147,6 +234,10 @@
 				const winningIndex = Math.floor(adjustedAngle / segmentAngle) % wheelData.length;
 
 				console.log('Wheel landed on:', wheelData[winningIndex]);
+				finalSegment = wheelData[winningIndex];
+				setTimeout(() => {
+					gameState = GAME_STATES.QUIZ;
+				}, 1000);
 			}
 
 			drawWheel();
@@ -155,10 +246,15 @@
 	}
 
 	function spinWheel() {
+		if (gameState === GAME_STATES.START) {
+			gameState = GAME_STATES.FORM;
+			return;
+		}
+
 		if (!isSpinning) {
 			isSpinning = true;
-			// Random initial speed between 0.02 and 0.03 for more dramatic spins
-			spinSpeed = 0.02 + Math.random() * 0.01;
+			// Random initial speed between 0.04 and 0.06 for faster spins
+			spinSpeed = 0.04 + Math.random() * 0.02;
 			lastTimestamp = 0;
 			requestAnimationFrame(animate);
 		}
@@ -166,9 +262,7 @@
 </script>
 
 <div class="relative flex h-full w-full flex-col items-center p-4">
-	<div
-		class="relative mx-auto flex aspect-square max-h-[90vh] w-full max-w-[90vw] items-center justify-center"
-	>
+	<div class="relative mx-auto flex aspect-square w-full max-w-[90vw] items-center justify-center">
 		<canvas
 			bind:this={canvas}
 			class="block aspect-square h-full rounded-full bg-white shadow-2xl"
@@ -176,10 +270,16 @@
 		></canvas>
 		<button
 			onclick={spinWheel}
-			class="absolute top-1/2 left-1/2 flex aspect-square h-[10vh] -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-black bg-white text-[2vh] font-bold text-black shadow-lg transition-all duration-300 active:scale-90 disabled:cursor-not-allowed disabled:bg-gray-300"
+			class="absolute top-1/2 left-1/2 flex aspect-square h-[10vh] -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-4 border-black bg-white text-[2.5vh] font-extrabold text-black shadow-2xl drop-shadow-lg transition-all duration-300 disabled:cursor-not-allowed disabled:bg-gray-300"
 			disabled={isSpinning}
 		>
-			<span class="whitespace-nowrap">Spin</span>
+			<span class="whitespace-nowrap">
+				{#if gameState === GAME_STATES.START}
+					Start
+				{:else}
+					Spin
+				{/if}
+			</span>
 		</button>
 	</div>
 </div>

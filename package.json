@@ -35,6 +35,8 @@
 		]
 	},
 	"dependencies": {
-		"spin-wheel": "^5.0.2"
+		"canvas-confetti": "^1.9.3",
+		"spin-wheel": "^5.0.2",
+		"svelte-keyboard": "^0.5.5"
 	}
 }

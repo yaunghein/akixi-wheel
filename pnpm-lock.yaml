@@ -8,9 +8,15 @@ importers:
 
   .:
     dependencies:
+      canvas-confetti:
+        specifier: ^1.9.3
+        version: 1.9.3
       spin-wheel:
         specifier: ^5.0.2
         version: 5.0.2
+      svelte-keyboard:
+        specifier: ^0.5.5
+        version: 0.5.5
     devDependencies:
       '@sveltejs/adapter-auto':
         specifier: ^6.0.0
@@ -518,6 +524,9 @@ packages:
   brace-expansion@1.1.11:
     resolution: {integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==}
 
+  canvas-confetti@1.9.3:
+    resolution: {integrity: sha512-rFfTURMvmVEX1gyXFgn5QMn81bYk70qa0HLzcIOSVEyl57n6o9ItHeBtUSWdvKAPY0xlvBHno4/v3QPrT83q9g==}
+
   canvas@2.11.2:
     resolution: {integrity: sha512-ItanGBMrmRV7Py2Z+Xhs7cT+FNt5K0vPL4p9EZ/UX/Mu7hFbkxSjKF2KVtPwX7UYWp7dRKnrTvReflgrItJbdw==}
     engines: {node: '>=6'}
@@ -996,6 +1005,9 @@ packages:
       svelte: ^4.0.0 || ^5.0.0-next.0
       typescript: '>=5.0.0'
 
+  svelte-keyboard@0.5.5:
+    resolution: {integrity: sha512-yxtQBhz2wMy8qf60pW3VRI7Pwvv3X7+MHeaZZA0rq3fnFPDPOXZq6FF7GhF9NmL4dm4bWu/c8YfYnwsaNcpmRg==}
+
   svelte@5.33.2:
     resolution: {integrity: sha512-uiyusx2rUa9NmVMaIcShnZyDhOfFXxgkn5eXOcgjDBL3RYQGR1+7TctPcI6AWNbu4gHWF5xZ/TlFM7nnw5H+JQ==}
     engines: {node: '>=18'}
@@ -1458,6 +1470,8 @@ snapshots:
       concat-map: 0.0.1
     optional: true
 
+  canvas-confetti@1.9.3: {}
+
   canvas@2.11.2:
     dependencies:
       '@mapbox/node-pre-gyp': 1.0.11
@@ -1902,6 +1916,8 @@ snapshots:
       typescript: 5.8.3
     transitivePeerDependencies:
       - picomatch
+
+  svelte-keyboard@0.5.5: {}
 
   svelte@5.33.2:
     dependencies:
