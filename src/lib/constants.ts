@@ -2,6 +2,7 @@ export const GAME_STATES = {
 	START: 'start',
 	FORM: 'form',
 	SPIN: 'spin',
+	LANDED: 'landed',
 	QUIZ: 'quiz',
 	RESULT: 'result'
 } as const;

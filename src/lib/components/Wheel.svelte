@@ -240,7 +240,7 @@
 				console.log('Wheel landed on:', wheelData[winningIndex]);
 				finalSegment = wheelData[winningIndex];
 				setTimeout(() => {
-					// gameState = GAME_STATES.QUIZ;
+					gameState = GAME_STATES.LANDED;
 				}, 1000);
 			}
 

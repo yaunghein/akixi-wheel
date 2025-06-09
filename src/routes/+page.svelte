@@ -8,7 +8,7 @@
 	import BackButton from '$lib/components/BackButton.svelte';
 
 	let segmentColor = $state('#FF6B6B');
-	let gameState = $state(GAME_STATES.SPIN) as TGameState;
+	let gameState = $state(GAME_STATES.START) as TGameState;
 	let showWheel = $derived(gameState === GAME_STATES.START || gameState === GAME_STATES.SPIN);
 
 	type QuizQuestion = {
@@ -24,7 +24,17 @@
 		question: QuizQuestion;
 	};
 
-	let finalSegment: WheelSegment | null = $state(null);
+	let finalSegment: WheelSegment | null = $state({
+		text: 'Missed Call Recovery',
+		color: '#22f4ad',
+		question: {
+			text: '“Does Teams tell you which missed calls were never returned?”',
+			choices: ['YES', 'NO', 'Only via a third-party tool'],
+			correct: 'A',
+			explanation: 'Teams does not tell you which missed calls were never returned.'
+		}
+	});
+	// let finalSegment: WheelSegment | null = $state(null);
 
 	type FormState = {
 		first_name: string;
@@ -134,15 +144,15 @@
 </script>
 
 <main
-	class="bg-electric-indigo flex min-h-screen items-center justify-center overflow-hidden text-white transition-colors duration-500"
+	class="bg-electric-indigo flex min-h-screen overflow-hidden text-white transition-colors duration-500"
 >
-	<div class="flex aspect-[4/7] w-full flex-col">
-		<div class="mx-auto mt-28 aspect-[1/0.27] w-[40.5rem]">
+	<div class="flex aspect-[4/7] w-full flex-col pt-28">
+		<div class="mx-auto mb-auto aspect-[1/0.27] w-[40.5rem]">
 			<Logo />
 		</div>
 		{#if showWheel}
 			<div class="flex h-full flex-col items-center text-center">
-				<div class="my-20 max-w-[65rem] text-[5.34rem] leading-none">
+				<div class="mt-[7.5rem] mb-24 max-w-[65rem] text-[5.34rem] leading-none">
 					Turn Your CX's Blind Spots into your Revenue
 				</div>
 				{@render spinAndWin()}
@@ -237,22 +247,24 @@
 						</div>
 					{/if}
 					<div class="flex flex-1 items-center justify-center">
-						<button
-							onclick={() => {
-								// if (validateForm()) {
-								gameState = GAME_STATES.SPIN;
-								// }
-							}}
-							class="font-apertura-black bg-vivid-sky rounded-[2.29rem] px-48 py-12 text-[6.11rem] leading-none text-[#23475F]"
-						>
-							<span class="inline-block translate-y-1">Play</span>
-						</button>
+						{@render button({ label: 'Play', onclick: () => (gameState = GAME_STATES.SPIN) })}
 					</div>
 				</div>
 
 				<!-- <div class="mt-auto">
 					<Keyboard on:keydown={onKeydown} />
 				</div> -->
+			</div>
+		{:else if gameState === GAME_STATES.LANDED}
+			<div class="my-auto text-center text-[7.33rem] leading-none">
+				<div class="font-apertura-black">You landed on</div>
+				<div class="font-apertura-black text-vivid-sky text-shadow-small">
+					{finalSegment?.text.split(' ').slice(0, -1).join(' ')}
+					<span class="text-aquamarineo">{finalSegment?.text.split(' ').pop()}</span>
+				</div>
+			</div>
+			<div class="my-auto flex items-center justify-center">
+				{@render button({ label: 'Continue', onclick: () => (gameState = GAME_STATES.QUIZ) })}
 			</div>
 		{:else if gameState === GAME_STATES.QUIZ}
 			{#if finalSegment}
@@ -267,8 +279,9 @@
 								<span
 									class="text-2xl font-bold"
 									style="color: {i === 0 ? '#2fffa3' : i === 1 ? '#3b82f6' : '#2fd6ff'}"
-									>{String.fromCharCode(65 + i)}</span
 								>
+									{String.fromCharCode(65 + i)}
+								</span>
 								<span class="text-lg">{choice}</span>
 							</div>
 						{/each}
@@ -330,7 +343,16 @@
 </main>
 
 {#snippet spinAndWin()}
-	<div class="font-apertura-black text-shadow-big text-vivid-sky text-[13.9rem] leading-none">
+	<div class="font-apertura-black text-shadow-small text-vivid-sky text-[13.9rem] leading-none">
 		SPIN <span class="text-aquamarineo">&</span> WIN
 	</div>
+{/snippet}
+
+{#snippet button({ label, onclick }: { label: string; onclick: () => void })}
+	<button
+		{onclick}
+		class="font-apertura-black bg-vivid-sky rounded-[2.29rem] px-48 py-12 text-[6.11rem] leading-none text-[#23475F]"
+	>
+		<span class="inline-block translate-y-1">{label}</span>
+	</button>
 {/snippet}
