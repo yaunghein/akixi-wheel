@@ -2,7 +2,9 @@
 	import Keyboard from 'svelte-keyboard';
 	import Wheel from '$lib/components/Wheel.svelte';
 	import { GAME_STATES, type TGameState } from '$lib/constants';
-	import { onMount } from 'svelte';
+	import Logo from '$lib/components/Logo.svelte';
+	import WheelBackgroundWithDots from '$lib/components/WheelBackgroundWithDots.svelte';
+	import Indicator from '$lib/components/Indicator.svelte';
 
 	let segmentColor = $state('#FF6B6B');
 	let gameState = $state(GAME_STATES.START) as TGameState;
@@ -131,31 +133,35 @@
 </script>
 
 <main
-	class="flex min-h-screen items-center justify-center bg-neutral-600 transition-colors duration-500"
+	class="bg-electric-indigo flex min-h-screen items-center justify-center text-white transition-colors duration-500"
 >
-	<div class="flex aspect-[4/7] w-full flex-col items-center justify-between">
+	<div class="flex aspect-[4/7] w-full flex-col">
 		{#if showWheel}
-			<div class="flex w-full flex-1 items-center justify-center py-8">
-				<div class="flex h-full w-full flex-col items-center">
-					<!-- Akixi logo and tagline -->
-					<div class="mb-4 flex flex-col items-center">
-						<div class="flex items-center gap-2 text-5xl font-extrabold tracking-tight text-white">
-							<span>akixi</span>
-							<span class="ml-1 rounded bg-cyan-400 px-2 py-1 align-top text-xs font-bold">CX</span>
+			<div class="flex h-full flex-col items-center text-center">
+				<div class="mt-28 aspect-[1/0.27] w-[40.5rem]">
+					<Logo />
+				</div>
+				<div class="my-20 max-w-[65rem] text-[5.34rem] leading-none">
+					Turn Your CX's Blind Spots into your Revenue
+				</div>
+				<div
+					class="font-apertura-black text-shadow-akixi text-vivid-sky text-[13.9rem] leading-none"
+				>
+					SPIN <span class="text-aquamarineo">&</span> WIN
+				</div>
+				<div class="my-auto w-full">
+					<div class="relative p-[0.65rem] sm:p-[1.9rem]">
+						<div class="pointer-events-none absolute inset-0 h-full w-full rotate-[26.2deg]">
+							<WheelBackgroundWithDots />
 						</div>
-						<div class="mt-2 text-center text-lg font-medium text-blue-100">
-							Turn Your CX's Blind Spots into your Revenue
+						<div class="overflow-hidden">
+							<Wheel bind:segmentColor bind:gameState bind:finalSegment />
 						</div>
 						<div
-							class="mt-4 text-center text-4xl font-extrabold"
-							style="color:#2fffa3; text-shadow: 0 2px 8px #0008;"
+							class="pointer-events-none absolute -top-8 left-1/2 aspect-[1/0.91] w-[9.93rem] -translate-x-1/2"
 						>
-							SPIN & WIN
+							<Indicator />
 						</div>
-					</div>
-					<!-- Wheel -->
-					<div class="flex w-full flex-1 items-center justify-center">
-						<Wheel bind:segmentColor bind:gameState bind:finalSegment />
 					</div>
 				</div>
 			</div>

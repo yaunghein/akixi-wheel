@@ -158,7 +158,7 @@
 			ctx.closePath();
 			ctx.fillStyle = segment.color;
 			ctx.fill();
-			ctx.stroke();
+			// ctx.stroke();
 
 			// Draw text (auto-wrap based on max width)
 			ctx.save();
@@ -171,7 +171,7 @@
 			const baseFontSize = radius * 0.06; // 6% of radius
 			ctx.font = `bold ${baseFontSize}px ${fontLoaded ? 'AperturaBlack' : 'Arial'}`;
 
-			const maxTextWidth = radius * 0.7; // 70% of radius
+			const maxTextWidth = radius * 0.5; // Reduced from 0.7 to 0.5 (50% of radius)
 			const words = segment.text.split(' ');
 			const lines = [];
 			let currentLine = words[0];
@@ -190,7 +190,7 @@
 
 			const lineHeight = baseFontSize * 1.2;
 			lines.forEach((line, i) => {
-				ctx.fillText(line, radius * 0.85, (i - (lines.length - 1) / 2) * lineHeight);
+				ctx.fillText(line, radius * 0.8, (i - (lines.length - 1) / 2) * lineHeight); // Moved from 0.85 to 0.95
 			});
 
 			ctx.restore();
@@ -261,25 +261,22 @@
 	}
 </script>
 
-<div class="relative flex h-full w-full flex-col items-center p-4">
-	<div class="relative mx-auto flex aspect-square w-full max-w-[90vw] items-center justify-center">
-		<canvas
-			bind:this={canvas}
-			class="block aspect-square h-full rounded-full bg-white shadow-2xl"
-			style="border: 1px solid black;"
-		></canvas>
-		<button
-			onclick={spinWheel}
-			class="absolute top-1/2 left-1/2 flex aspect-square h-[10vh] -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-4 border-black bg-white text-[2.5vh] font-extrabold text-black shadow-2xl drop-shadow-lg transition-all duration-300 disabled:cursor-not-allowed disabled:bg-gray-300"
-			disabled={isSpinning}
-		>
-			<span class="whitespace-nowrap">
-				{#if gameState === GAME_STATES.START}
-					Start
-				{:else}
-					Spin
-				{/if}
-			</span>
-		</button>
-	</div>
+<div class="relative mx-auto flex aspect-square w-full max-w-[90vw] items-center justify-center">
+	<canvas bind:this={canvas} class="block aspect-square h-full rounded-full"></canvas>
+	<button
+		onclick={spinWheel}
+		class="font-apertura-black absolute top-1/2 left-1/2 flex aspect-square h-[19.55rem] -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-[1rem] border-[#23475F] bg-white text-[5.2rem] leading-none text-[#23475F] uppercase transition-all duration-300 disabled:cursor-not-allowed"
+		disabled={isSpinning}
+	>
+		<span class="translate-y-3 whitespace-nowrap">
+			{#if gameState === GAME_STATES.START}
+				Start
+			{:else}
+				Spin
+			{/if}
+		</span>
+	</button>
+	<div
+		class="border-oxford-blue/20 pointer-events-none absolute inset-8 rounded-[100vw] border-[2.8rem] sm:inset-1 sm:border-[3.2rem]"
+	></div>
 </div>

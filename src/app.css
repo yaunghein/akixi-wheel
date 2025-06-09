@@ -35,7 +35,7 @@
 	}
 }
 
-:root {
+@theme {
 	--font-apertura-regular: 'AperturaRegular', sans-serif;
 	--font-apertura-medium: 'AperturaMedium', sans-serif;
 	--font-apertura-black: 'AperturaBlack', sans-serif;
@@ -45,4 +45,6 @@
 	--color-aquamarineo: #22f4ad;
 	--color-vivid-sky: #1cd2fa;
 	--color-tomato: #f1515d;
+
+	--text-shadow-akixi: 0 9.77px 24px #000000;
 }
