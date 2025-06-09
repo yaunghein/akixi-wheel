@@ -25,7 +25,7 @@
 	const wheelData: WheelSegment[] = [
 		{
 			text: 'Missed Call Recovery',
-			color: '#2fffa3', // greenish
+			color: '#22f4ad',
 			question: {
 				text: '“Does Teams tell you which missed calls were never returned?”',
 				choices: ['YES', 'NO', 'Only via a third-party tool'],
@@ -36,7 +36,7 @@
 		},
 		{
 			text: 'Call Tagging & Categorisation',
-			color: '#2fd6ff', // cyan
+			color: '#1cd2fa',
 			question: {
 				text: 'Which feature helps you recover missed sales opportunities?',
 				choices: ['Missed Call Recovery', 'Call Recording', 'Voicemail'],
@@ -47,7 +47,7 @@
 		},
 		{
 			text: 'Custom Dashboards',
-			color: '#3b82f6', // blue
+			color: '#4450ff',
 			question: {
 				text: 'What is the main benefit of real-time missed call tracking?',
 				choices: ['Faster internet', 'Optimised revenue', 'Cheaper calls'],
@@ -58,7 +58,7 @@
 		},
 		{
 			text: 'Akixi Reporting',
-			color: '#45B7D1', // light blue
+			color: '#1cd2fa',
 			question: {
 				text: 'Which of these is a third-party tool for Teams?',
 				choices: ['Akixi', 'Excel', 'Paint'],
@@ -69,7 +69,7 @@
 		},
 		{
 			text: 'History Reporting',
-			color: '#4ECDC4', // teal
+			color: '#22f4ad',
 			question: {
 				text: 'What does Akixi help you track?',
 				choices: ['Missed calls', 'Emails', 'SMS'],
@@ -80,7 +80,7 @@
 		},
 		{
 			text: 'Voicemail',
-			color: '#96CEB4', // light green
+			color: '#4450ff',
 			question: {
 				text: 'Which is NOT a feature of Akixi?',
 				choices: ['Missed Call Recovery', 'Weather Forecast', 'Real-time Analytics'],
@@ -90,7 +90,7 @@
 		},
 		{
 			text: 'Call Outcomes',
-			color: '#5eead4', // teal
+			color: '#1cd2fa',
 			question: {
 				text: 'Which feature helps you track the result of each call?',
 				choices: ['Call Outcomes', 'Voicemail', 'Custom Dashboards'],
@@ -165,7 +165,11 @@
 			ctx.translate(centerX, centerY);
 			ctx.rotate(startAngle + segmentAngle / 2);
 			ctx.textAlign = 'right';
-			ctx.fillStyle = '#000';
+			ctx.fillStyle = '#fff';
+			ctx.shadowColor = '#000000';
+			ctx.shadowBlur = 10;
+			ctx.shadowOffsetX = 0;
+			ctx.shadowOffsetY = 7.33;
 
 			// Scale font size based on radius
 			const baseFontSize = radius * 0.06; // 6% of radius
@@ -236,7 +240,7 @@
 				console.log('Wheel landed on:', wheelData[winningIndex]);
 				finalSegment = wheelData[winningIndex];
 				setTimeout(() => {
-					gameState = GAME_STATES.QUIZ;
+					// gameState = GAME_STATES.QUIZ;
 				}, 1000);
 			}
 
@@ -277,6 +281,6 @@
 		</span>
 	</button>
 	<div
-		class="border-oxford-blue/20 pointer-events-none absolute inset-8 rounded-[100vw] border-[2.8rem] sm:inset-1 sm:border-[3.2rem]"
+		class="border-oxford-blue/20 pointer-events-none absolute inset-8 rounded-[100vw] border-[2.8rem] sm:inset-2 sm:border-[3.2rem]"
 	></div>
 </div>

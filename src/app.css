@@ -46,5 +46,8 @@
 	--color-vivid-sky: #1cd2fa;
 	--color-tomato: #f1515d;
 
-	--text-shadow-akixi: 0 9.77px 24px #000000;
+	--text-shadow-big: 0 9.77px 24px #000000;
+	--text-shadow-small: 0 7.33px 10px #000000;
+
+	--shadow-form-input: inset 0 10px 10px 0 rgba(0, 0, 0, 0.25);
 }

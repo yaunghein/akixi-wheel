@@ -5,9 +5,10 @@
 	import Logo from '$lib/components/Logo.svelte';
 	import WheelBackgroundWithDots from '$lib/components/WheelBackgroundWithDots.svelte';
 	import Indicator from '$lib/components/Indicator.svelte';
+	import BackButton from '$lib/components/BackButton.svelte';
 
 	let segmentColor = $state('#FF6B6B');
-	let gameState = $state(GAME_STATES.START) as TGameState;
+	let gameState = $state(GAME_STATES.SPIN) as TGameState;
 	let showWheel = $derived(gameState === GAME_STATES.START || gameState === GAME_STATES.SPIN);
 
 	type QuizQuestion = {
@@ -133,32 +134,28 @@
 </script>
 
 <main
-	class="bg-electric-indigo flex min-h-screen items-center justify-center text-white transition-colors duration-500"
+	class="bg-electric-indigo flex min-h-screen items-center justify-center overflow-hidden text-white transition-colors duration-500"
 >
 	<div class="flex aspect-[4/7] w-full flex-col">
+		<div class="mx-auto mt-28 aspect-[1/0.27] w-[40.5rem]">
+			<Logo />
+		</div>
 		{#if showWheel}
 			<div class="flex h-full flex-col items-center text-center">
-				<div class="mt-28 aspect-[1/0.27] w-[40.5rem]">
-					<Logo />
-				</div>
 				<div class="my-20 max-w-[65rem] text-[5.34rem] leading-none">
 					Turn Your CX's Blind Spots into your Revenue
 				</div>
-				<div
-					class="font-apertura-black text-shadow-akixi text-vivid-sky text-[13.9rem] leading-none"
-				>
-					SPIN <span class="text-aquamarineo">&</span> WIN
-				</div>
+				{@render spinAndWin()}
 				<div class="my-auto w-full">
-					<div class="relative p-[0.65rem] sm:p-[1.9rem]">
+					<div class="relative p-[0.65rem] sm:p-[2rem]">
 						<div class="pointer-events-none absolute inset-0 h-full w-full rotate-[26.2deg]">
 							<WheelBackgroundWithDots />
 						</div>
-						<div class="overflow-hidden">
+						<div class="w-full">
 							<Wheel bind:segmentColor bind:gameState bind:finalSegment />
 						</div>
 						<div
-							class="pointer-events-none absolute -top-8 left-1/2 aspect-[1/0.91] w-[9.93rem] -translate-x-1/2"
+							class="pointer-events-none absolute -top-[1.85rem] left-1/2 aspect-[1/0.91] w-[9.93rem] -translate-x-1/2"
 						>
 							<Indicator />
 						</div>
@@ -166,78 +163,96 @@
 				</div>
 			</div>
 		{:else if gameState === GAME_STATES.FORM}
-			<div class="flex h-full w-full flex-col bg-sky-200 p-8">
+			<div class="flex h-full w-full flex-col">
+				<div class="mt-20 flex justify-center">
+					{@render spinAndWin()}
+				</div>
 				<button
 					onclick={() => (gameState = GAME_STATES.START)}
-					class="fixed top-4 right-4 aspect-square w-10 bg-neutral-600 text-white">{`<-`}</button
+					class="absolute top-8 right-8 aspect-[1/0.96] w-[7rem] cursor-pointer"
 				>
-				<form class="mt-10 flex w-full flex-col gap-4">
-					<div class="flex gap-2">
+					<BackButton />
+				</button>
+				<div class="mx-auto mt-32 flex h-full w-full max-w-[73.5rem] flex-col gap-4">
+					<div class="flex gap-11">
 						<label class="flex flex-col gap-2">
-							<span class="">First Name</span>
+							<span class="text-shadow-small inline-block text-[3.36rem] leading-none">
+								First Name
+							</span>
 							<input
 								type="text"
 								name="first_name"
-								class="w-full"
+								class="text-oxford-blue shadow-form-input border-electric-indigo focus:border-vivid-sky h-[7.94rem] w-[25.05rem] rounded-[1.53rem] border-2 bg-[#D9D9D9] px-6 text-[3.36rem] leading-none placeholder:text-[#B4B4B4] focus:ring-0 focus:outline-none"
 								bind:value={formState.first_name}
+								placeholder="John"
 								onfocus={handleFieldFocus}
 							/>
 						</label>
-						<label class="flex flex-col gap-2">
-							<span class="">Last Name</span>
+						<label class="flex flex-1 flex-col gap-2">
+							<span class="text-shadow-small inline-block text-[3.36rem] leading-none">
+								Last Name
+							</span>
 							<input
 								type="text"
 								name="last_name"
-								class="w-full"
+								placeholder="Doe"
+								class="text-oxford-blue shadow-form-input border-electric-indigo focus:border-vivid-sky h-[7.94rem] w-full rounded-[1.53rem] border-2 bg-[#D9D9D9] px-6 text-[3.36rem] leading-none placeholder:text-[#B4B4B4] focus:ring-0 focus:outline-none"
 								bind:value={formState.last_name}
 								onfocus={handleFieldFocus}
 							/>
 						</label>
 					</div>
-					<label class="flex flex-col gap-2">
-						<span class="">Email</span>
+					<label class="mt-8 flex flex-col gap-2">
+						<span class="text-shadow-small inline-block text-[3.36rem] leading-none">
+							Email Address
+						</span>
 						<input
 							type="email"
 							name="email"
-							class="w-full"
+							class="text-oxford-blue shadow-form-input border-electric-indigo focus:border-vivid-sky h-[7.94rem] w-full rounded-[1.53rem] border-2 bg-[#D9D9D9] px-6 text-[3.36rem] leading-none placeholder:text-[#B4B4B4] focus:ring-0 focus:outline-none"
+							placeholder="johndoe@gmail.com"
 							bind:value={formState.email}
 							onfocus={handleFieldFocus}
 						/>
 					</label>
-					<label class="flex items-center gap-2">
-						<span class="">I would like to stay in touch with Akixi</span>
+					<label class="mt-10 flex items-center justify-between gap-2 pr-2">
+						<span class="text-shadow-small inline-block translate-y-1 text-[3.36rem] leading-none">
+							Yes, I would like to stay in touch with Akixi.
+						</span>
 						<input
 							type="checkbox"
 							name="terms"
-							checked={formState.stay_in_touch}
-							onchange={handleCheckboxChange}
+							class="checked:bg-vivid-sky checked:text-vivid-sky h-[4.12rem] w-[4.12rem] !appearance-none rounded-[0.75rem] border-2 border-none bg-[#D9D9D9]"
 						/>
 					</label>
-					<a href="/privacy-policy" class="text-blue-500 underline">Privacy Policy</a>
-				</form>
-
-				{#if errorMessage}
-					<div class="mt-4 rounded-md bg-red-50 p-4">
-						<div class="flex">
-							<div class="flex-shrink-0">
-								<svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-									<path
-										fill-rule="evenodd"
-										d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-										clip-rule="evenodd"
-									/>
-								</svg>
-							</div>
-							<div class="ml-3">
-								<p class="text-sm font-medium text-red-800">{errorMessage}</p>
-							</div>
+					<a
+						href="/privacy-policy"
+						class="text-aquamarineo font-apertura-medium mt-10 inline-block text-[3.36rem] leading-none underline"
+					>
+						Privacy Policy
+					</a>
+					{#if errorMessage}
+						<div class="mt-10">
+							<p class="font-apertura-black text-tomato text-[3.36rem]">Error: {errorMessage}</p>
 						</div>
+					{/if}
+					<div class="flex flex-1 items-center justify-center">
+						<button
+							onclick={() => {
+								// if (validateForm()) {
+								gameState = GAME_STATES.SPIN;
+								// }
+							}}
+							class="font-apertura-black bg-vivid-sky rounded-[2.29rem] px-48 py-12 text-[6.11rem] leading-none text-[#23475F]"
+						>
+							<span class="inline-block translate-y-1">Play</span>
+						</button>
 					</div>
-				{/if}
-
-				<div class="mt-auto">
-					<Keyboard on:keydown={onKeydown} />
 				</div>
+
+				<!-- <div class="mt-auto">
+					<Keyboard on:keydown={onKeydown} />
+				</div> -->
 			</div>
 		{:else if gameState === GAME_STATES.QUIZ}
 			{#if finalSegment}
@@ -313,3 +328,9 @@
 		{/if}
 	</div>
 </main>
+
+{#snippet spinAndWin()}
+	<div class="font-apertura-black text-shadow-big text-vivid-sky text-[13.9rem] leading-none">
+		SPIN <span class="text-aquamarineo">&</span> WIN
+	</div>
+{/snippet}
