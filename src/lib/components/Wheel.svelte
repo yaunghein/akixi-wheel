@@ -164,7 +164,7 @@
 			ctx.save();
 			ctx.translate(centerX, centerY);
 			ctx.rotate(startAngle + segmentAngle / 2);
-			ctx.textAlign = 'right';
+			ctx.textAlign = 'left';
 			ctx.fillStyle = '#fff';
 			ctx.shadowColor = '#000000';
 			ctx.shadowBlur = 10;
@@ -194,7 +194,7 @@
 
 			const lineHeight = baseFontSize * 1.2;
 			lines.forEach((line, i) => {
-				ctx.fillText(line, radius * 0.8, (i - (lines.length - 1) / 2) * lineHeight); // Moved from 0.85 to 0.95
+				ctx.fillText(line, radius * 0.4, (i - (lines.length - 1) / 2) * lineHeight);
 			});
 
 			ctx.restore();

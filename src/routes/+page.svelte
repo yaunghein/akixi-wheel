@@ -8,7 +8,7 @@
 	import BackButton from '$lib/components/BackButton.svelte';
 
 	let segmentColor = $state('#FF6B6B');
-	let gameState = $state(GAME_STATES.START) as TGameState;
+	let gameState = $state(GAME_STATES.QUIZ) as TGameState;
 	let showWheel = $derived(gameState === GAME_STATES.START || gameState === GAME_STATES.SPIN);
 
 	type QuizQuestion = {
@@ -29,7 +29,7 @@
 		color: '#22f4ad',
 		question: {
 			text: '“Does Teams tell you which missed calls were never returned?”',
-			choices: ['YES', 'NO', 'Only via a third-party tool'],
+			choices: ['YES', 'NO', 'Only via a third-party tool ly via a third-party tool'],
 			correct: 'A',
 			explanation: 'Teams does not tell you which missed calls were never returned.'
 		}
@@ -259,8 +259,12 @@
 			<div class="my-auto text-center text-[7.33rem] leading-none">
 				<div class="font-apertura-black">You landed on</div>
 				<div class="font-apertura-black text-vivid-sky text-shadow-small">
-					{finalSegment?.text.split(' ').slice(0, -1).join(' ')}
-					<span class="text-aquamarineo">{finalSegment?.text.split(' ').pop()}</span>
+					{#if finalSegment?.text.split(' ').length && finalSegment?.text.split(' ').length > 1}
+						{finalSegment?.text.split(' ').slice(0, -1).join(' ')}
+						<span class="text-aquamarineo">{finalSegment?.text.split(' ').pop()}</span>
+					{:else}
+						{finalSegment?.text}
+					{/if}
 				</div>
 			</div>
 			<div class="my-auto flex items-center justify-center">
@@ -268,41 +272,58 @@
 			</div>
 		{:else if gameState === GAME_STATES.QUIZ}
 			{#if finalSegment}
-				<div
-					class="flex h-full w-full flex-col items-center justify-center bg-neutral-600 p-8 text-white"
-				>
-					<h2 class="mb-2 text-2xl font-bold">{finalSegment.text}</h2>
-					<p class="mb-6 text-center text-lg">{finalSegment.question.text}</p>
-					<div class="mb-6 flex w-full max-w-xs flex-col gap-2">
+				<div class="mt-32 flex h-full w-full flex-col items-center text-[7.33rem]">
+					<div class="font-apertura-black text-vivid-sky text-shadow-small">
+						{#if finalSegment?.text.split(' ').length && finalSegment?.text.split(' ').length > 1}
+							{finalSegment?.text.split(' ').slice(0, -1).join(' ')}
+							<span class="text-aquamarineo">{finalSegment?.text.split(' ').pop()}</span>
+						{:else}
+							{finalSegment?.text}
+						{/if}
+					</div>
+					<p
+						class="text-shadow-small font-apertura-medium mx-auto mt-28 max-w-[73.5rem] text-center text-[4.43rem] leading-[1.2]"
+					>
+						{finalSegment.question.text}
+					</p>
+					<div class="mt-52 flex w-full max-w-[73.5rem] flex-col gap-20">
 						{#each finalSegment.question.choices as choice, i}
-							<div class="flex items-center gap-2">
+							<div class="flex items-center gap-16">
 								<span
-									class="text-2xl font-bold"
-									style="color: {i === 0 ? '#2fffa3' : i === 1 ? '#3b82f6' : '#2fd6ff'}"
+									class="font-apertura-black text-shadow-small text-[12.98rem] leading-none"
+									style="color: {i === 0 ? '#22f4ad' : i === 1 ? '#4450ff' : '#1cd2fa'}"
 								>
 									{String.fromCharCode(65 + i)}
 								</span>
-								<span class="text-lg">{choice}</span>
+								<span
+									class="text-shadow-small font-apertura-medium -translate-y-4 text-[4.43rem] leading-[1.2]"
+								>
+									{choice}
+								</span>
 							</div>
 						{/each}
 					</div>
-					<p class="mb-2">Select your answer below</p>
-					<div class="flex gap-4">
-						<button
-							class="rounded-lg px-6 py-2 text-2xl font-bold shadow-md"
-							style="background:#2fffa3;color:#222"
-							onclick={() => selectAnswer('A')}>A</button
-						>
-						<button
-							class="rounded-lg px-6 py-2 text-2xl font-bold shadow-md"
-							style="background:#3b82f6;color:#fff"
-							onclick={() => selectAnswer('B')}>B</button
-						>
-						<button
-							class="rounded-lg px-6 py-2 text-2xl font-bold shadow-md"
-							style="background:#2fd6ff;color:#fff"
-							onclick={() => selectAnswer('C')}>C</button
-						>
+					<p class="text-shadow-small font-apertura-medium mt-52 text-[4.43rem] leading-none">
+						Select your answer below
+					</p>
+					<div class="mt-20 flex gap-[12.98rem]">
+						{#each ['A', 'B', 'C'] as answer}
+							<button
+								class="shadow-box relative aspect-square w-[15.28rem] rounded-[2.29rem]"
+								style="background: {answer === 'A'
+									? '#22f4ad'
+									: answer === 'B'
+										? '#4450ff'
+										: '#1cd2fa'}"
+								onclick={() => selectAnswer(answer as 'A' | 'B' | 'C')}
+							>
+								<span
+									class="font-apertura-black inline-block translate-y-5 text-[12.98rem] leading-none"
+								>
+									{answer}
+								</span>
+							</button>
+						{/each}
 					</div>
 				</div>
 			{/if}
@@ -351,7 +372,7 @@
 {#snippet button({ label, onclick }: { label: string; onclick: () => void })}
 	<button
 		{onclick}
-		class="font-apertura-black bg-vivid-sky rounded-[2.29rem] px-48 py-12 text-[6.11rem] leading-none text-[#23475F]"
+		class="font-apertura-black bg-vivid-sky cursor-pointer rounded-[2.29rem] px-48 py-12 text-[6.11rem] leading-none text-[#23475F]"
 	>
 		<span class="inline-block translate-y-1">{label}</span>
 	</button>
