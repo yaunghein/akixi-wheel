@@ -8,12 +8,12 @@
 	import BackButton from '$lib/components/BackButton.svelte';
 
 	let segmentColor = $state('#FF6B6B');
-	let gameState = $state(GAME_STATES.FINAL) as TGameState;
+	let gameState = $state(GAME_STATES.START) as TGameState;
 	let showWheel = $derived(gameState === GAME_STATES.START || gameState === GAME_STATES.SPIN);
 
 	type QuizQuestion = {
 		text: string;
-		choices: [string, string, string];
+		choices: string[];
 		correct: 'A' | 'B' | 'C';
 		explanation: string;
 	};
@@ -24,17 +24,7 @@
 		question: QuizQuestion;
 	};
 
-	let finalSegment: WheelSegment | null = $state({
-		text: 'Missed Call Recovery',
-		color: '#22f4ad',
-		question: {
-			text: '“Does Teams tell you which missed calls were never returned?”',
-			choices: ['YES', 'NO', 'Only via a third-party tool ly via a third-party tool'],
-			correct: 'A',
-			explanation:
-				'Only Akixi fills this gap with real-time missed call tracking, optimising revenue and customer satisfaction.'
-		}
-	});
+	let finalSegment: WheelSegment | null = $state(null);
 	// let finalSegment: WheelSegment | null = $state(null);
 
 	type FormState = {
@@ -320,23 +310,27 @@
 						Select your answer below
 					</p>
 					<div class="mt-20 flex gap-[12.98rem]">
-						{#each ['A', 'B', 'C'] as answer}
+						{#each finalSegment.question.choices as _, i}
 							<button
 								class="shadow-box relative aspect-square w-[15.28rem] rounded-[2.29rem] transition-opacity duration-150"
-								style="background: {answer === 'A'
+								style="background: {i === 0
 									? '#22f4ad'
-									: answer === 'B'
+									: i === 1
 										? '#4450ff'
-										: '#1cd2fa'}; opacity: {selectedAnswer === answer && isBlinking ? 0 : 1}"
-								onclick={() => selectAnswer(answer as 'A' | 'B' | 'C')}
+										: '#1cd2fa'}; opacity: {selectedAnswer === String.fromCharCode(65 + i) &&
+								isBlinking
+									? 0
+									: 1}"
+								onclick={() => selectAnswer(String.fromCharCode(65 + i) as 'A' | 'B' | 'C')}
 							>
 								<span
-									class="font-apertura-black inline-block translate-y-5 text-[12.98rem] leading-none {answer ===
-									'C'
+									class="font-apertura-black inline-block translate-y-5 text-[12.98rem] leading-none {String.fromCharCode(
+										65 + i
+									) === 'C'
 										? '-translate-x-2'
 										: ''}"
 								>
-									{answer}
+									{String.fromCharCode(65 + i)}
 								</span>
 							</button>
 						{/each}
