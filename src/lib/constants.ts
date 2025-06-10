@@ -4,7 +4,8 @@ export const GAME_STATES = {
 	SPIN: 'spin',
 	LANDED: 'landed',
 	QUIZ: 'quiz',
-	RESULT: 'result'
+	RESULT: 'result',
+	FINAL: 'final'
 } as const;
 
 export type TGameState = (typeof GAME_STATES)[keyof typeof GAME_STATES];

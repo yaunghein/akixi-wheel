@@ -8,7 +8,7 @@
 	import BackButton from '$lib/components/BackButton.svelte';
 
 	let segmentColor = $state('#FF6B6B');
-	let gameState = $state(GAME_STATES.QUIZ) as TGameState;
+	let gameState = $state(GAME_STATES.FINAL) as TGameState;
 	let showWheel = $derived(gameState === GAME_STATES.START || gameState === GAME_STATES.SPIN);
 
 	type QuizQuestion = {
@@ -60,6 +60,7 @@
 	// Quiz state
 	let selectedAnswer: 'A' | 'B' | 'C' | null = $state(null);
 	let isCorrect: boolean | null = $state(null);
+	let isBlinking = $state(false);
 
 	const validateEmail = (email: string) => {
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -120,8 +121,22 @@
 		formState.stay_in_touch = checkbox.checked;
 	};
 
-	function selectAnswer(answer: 'A' | 'B' | 'C') {
+	async function selectAnswer(answer: 'A' | 'B' | 'C') {
 		selectedAnswer = answer;
+		isBlinking = true;
+
+		// Blink twice with faster timing
+		for (let i = 0; i < 2; i++) {
+			await new Promise((resolve) => setTimeout(resolve, 150));
+			isBlinking = false;
+			await new Promise((resolve) => setTimeout(resolve, 150));
+			isBlinking = true;
+		}
+
+		isBlinking = false;
+		// Add a pause before showing result
+		await new Promise((resolve) => setTimeout(resolve, 750));
+
 		if (finalSegment && finalSegment.question) {
 			isCorrect = finalSegment.question.correct === answer;
 		}
@@ -129,7 +144,7 @@
 	}
 
 	$effect(() => {
-		if (gameState === GAME_STATES.RESULT && isCorrect) {
+		if (gameState === GAME_STATES.FINAL && isCorrect) {
 			// @ts-expect-error: no types for canvas-confetti
 			import('canvas-confetti').then((module) => {
 				const confetti = module.default;
@@ -140,6 +155,15 @@
 					colors: ['#2fffa3', '#2fd6ff', '#3b82f6', '#fff']
 				});
 			});
+		}
+	});
+
+	$effect(() => {
+		if (gameState === GAME_STATES.RESULT) {
+			const timer = setTimeout(() => {
+				gameState = GAME_STATES.FINAL;
+			}, 2000);
+			return () => clearTimeout(timer);
 		}
 	});
 </script>
@@ -298,12 +322,12 @@
 					<div class="mt-20 flex gap-[12.98rem]">
 						{#each ['A', 'B', 'C'] as answer}
 							<button
-								class="shadow-box relative aspect-square w-[15.28rem] rounded-[2.29rem]"
+								class="shadow-box relative aspect-square w-[15.28rem] rounded-[2.29rem] transition-opacity duration-150"
 								style="background: {answer === 'A'
 									? '#22f4ad'
 									: answer === 'B'
 										? '#4450ff'
-										: '#1cd2fa'}"
+										: '#1cd2fa'}; opacity: {selectedAnswer === answer && isBlinking ? 0 : 1}"
 								onclick={() => selectAnswer(answer as 'A' | 'B' | 'C')}
 							>
 								<span
@@ -358,6 +382,47 @@
 					<p class="mx-auto mt-20 max-w-[70rem] text-center text-[4.58rem] leading-[1.2]">
 						{finalSegment.question.explanation}
 					</p>
+				</div>
+			{/if}
+		{:else if gameState === GAME_STATES.FINAL}
+			{#if isCorrect}
+				<div class="my-auto text-center leading-none">
+					<div class="font-apertura-black text-aquamarineo text-shadow-small text-[10.08rem]">
+						Congratulations!
+					</div>
+					<div
+						class="text-aquamarineo text-shadow-small mx-auto mt-10 max-w-[55rem] text-[9.93rem] leading-[1]"
+					>
+						Collect your prize
+					</div>
+				</div>
+				<div class="mb-auto flex -translate-y-[15rem] items-center justify-center">
+					{@render button({ label: 'Start over', onclick: () => (gameState = GAME_STATES.START) })}
+				</div>
+			{:else}
+				<div class="my-auto -translate-y-[10rem] text-center leading-none">
+					<img
+						src="/images/sad.svg"
+						alt="Sad face"
+						class="mx-auto mb-20 aspect-square w-[30.09rem] shrink-0"
+					/>
+					<div class="font-apertura-black text-aquamarineo text-shadow-small text-[10.08rem]">
+						Hard luck
+					</div>
+					<div
+						class="text-aquamarineo text-shadow-small mx-auto mt-10 max-w-[55rem] text-[9.93rem] leading-[1]"
+					>
+						Please try again
+					</div>
+				</div>
+				<div class="mb-auto flex -translate-y-[12rem] flex-col items-center justify-center">
+					{@render button({ label: 'Start over', onclick: () => (gameState = GAME_STATES.START) })}
+					<button
+						class="font-apertura-black text-vivid-sky mt-20 cursor-pointer text-[6.11rem] leading-none underline"
+						onclick={() => (gameState = GAME_STATES.SPIN)}
+					>
+						Try again
+					</button>
 				</div>
 			{/if}
 		{/if}
