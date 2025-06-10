@@ -6,10 +6,23 @@
 	import WheelBackgroundWithDots from '$lib/components/WheelBackgroundWithDots.svelte';
 	import Indicator from '$lib/components/Indicator.svelte';
 	import BackButton from '$lib/components/BackButton.svelte';
+	import { onMount } from 'svelte';
 
 	let segmentColor = $state('#FF6B6B');
-	let gameState = $state(GAME_STATES.START) as TGameState;
+	let gameState = $state(GAME_STATES.LANDED) as TGameState;
 	let showWheel = $derived(gameState === GAME_STATES.START || gameState === GAME_STATES.SPIN);
+
+	const CLICK_DELAY = 150; // Single place to control all click delays
+
+	let clickSound: HTMLAudioElement | null = $state(null);
+	let tadaSound: HTMLAudioElement | null = $state(null);
+
+	onMount(() => {
+		clickSound = new Audio('/sounds/click.mp3');
+		clickSound.load();
+		tadaSound = new Audio('/sounds/tada.mp3');
+		tadaSound.load();
+	});
 
 	type QuizQuestion = {
 		text: string;
@@ -24,7 +37,17 @@
 		question: QuizQuestion;
 	};
 
-	let finalSegment: WheelSegment | null = $state(null);
+	let finalSegment: WheelSegment | null = $state({
+		text: 'Call Tagging & Categorisation',
+		color: '#1cd2fa',
+		question: {
+			text: 'Which feature helps you recover missed sales opportunities?',
+			choices: ['Missed Call Recovery', 'Call Recording', 'Voicemail'],
+			correct: 'A',
+			explanation:
+				'Missed Call Recovery helps you recover missed sales opportunities by tracking and alerting you to missed calls.'
+		}
+	});
 	// let finalSegment: WheelSegment | null = $state(null);
 
 	type FormState = {
@@ -135,6 +158,9 @@
 
 	$effect(() => {
 		if (gameState === GAME_STATES.FINAL && isCorrect) {
+			if (tadaSound) {
+				tadaSound.play();
+			}
 			// @ts-expect-error: no types for canvas-confetti
 			import('canvas-confetti').then((module) => {
 				const confetti = module.default;
@@ -156,6 +182,13 @@
 			return () => clearTimeout(timer);
 		}
 	});
+
+	const playClickSound = () => {
+		if (clickSound) {
+			clickSound.currentTime = 0; // Reset to start
+			clickSound.play();
+		}
+	};
 </script>
 
 <main
@@ -177,7 +210,13 @@
 							<WheelBackgroundWithDots />
 						</div>
 						<div class="w-full">
-							<Wheel bind:segmentColor bind:gameState bind:finalSegment />
+							<Wheel
+								bind:segmentColor
+								bind:gameState
+								bind:finalSegment
+								{CLICK_DELAY}
+								{clickSound}
+							/>
 						</div>
 						<div
 							class="pointer-events-none absolute -top-[1.85rem] left-1/2 aspect-[1/0.91] w-[9.93rem] -translate-x-1/2"
@@ -193,8 +232,13 @@
 					{@render spinAndWin()}
 				</div>
 				<button
-					onclick={() => (gameState = GAME_STATES.START)}
-					class="absolute top-8 right-8 aspect-[1/0.96] w-[7rem] cursor-pointer"
+					onmouseup={() => {
+						playClickSound();
+						setTimeout(() => {
+							gameState = GAME_STATES.START;
+						}, CLICK_DELAY);
+					}}
+					class="absolute top-8 right-8 aspect-[1/0.96] w-[7rem] cursor-pointer transition-transform active:scale-90"
 				>
 					<BackButton />
 				</button>
@@ -262,7 +306,15 @@
 						</div>
 					{/if}
 					<div class="flex flex-1 items-center justify-center">
-						{@render button({ label: 'Play', onclick: () => (gameState = GAME_STATES.SPIN) })}
+						{@render button({
+							label: 'Play',
+							onmouseup: () => {
+								playClickSound();
+								setTimeout(() => {
+									gameState = GAME_STATES.SPIN;
+								}, CLICK_DELAY);
+							}
+						})}
 					</div>
 				</div>
 
@@ -273,16 +325,24 @@
 		{:else if gameState === GAME_STATES.LANDED}
 			{#if finalSegment}
 				<div class="my-auto text-center text-[7.33rem] leading-none">
-					<div class="font-apertura-black">You landed on</div>
+					<div class="font-apertura-black mb-2">You landed on</div>
 					{@render splitText(finalSegment.text)}
 				</div>
 				<div class="my-auto flex items-center justify-center">
-					{@render button({ label: 'Continue', onclick: () => (gameState = GAME_STATES.QUIZ) })}
+					{@render button({
+						label: 'Continue',
+						onmouseup: () => {
+							playClickSound();
+							setTimeout(() => {
+								gameState = GAME_STATES.QUIZ;
+							}, CLICK_DELAY);
+						}
+					})}
 				</div>
 			{/if}
 		{:else if gameState === GAME_STATES.QUIZ}
 			{#if finalSegment}
-				<div class="mt-32 flex h-full w-full flex-col items-center text-[7.33rem]">
+				<div class="mt-32 flex h-full w-full flex-col items-center text-center text-[7.33rem]">
 					{@render splitText(finalSegment.text)}
 					<p
 						class="text-shadow-small font-apertura-medium mx-auto mt-28 max-w-[73.5rem] text-center text-[4.43rem] leading-[1.2]"
@@ -312,7 +372,7 @@
 					<div class="mt-20 flex gap-[12.98rem]">
 						{#each finalSegment.question.choices as _, i}
 							<button
-								class="shadow-box relative aspect-square w-[15.28rem] rounded-[2.29rem] transition-opacity duration-150"
+								class="shadow-box relative aspect-square w-[15.28rem] rounded-[2.29rem] transition-transform active:scale-90"
 								style="background: {i === 0
 									? '#22f4ad'
 									: i === 1
@@ -321,7 +381,12 @@
 								isBlinking
 									? 0
 									: 1}"
-								onclick={() => selectAnswer(String.fromCharCode(65 + i) as 'A' | 'B' | 'C')}
+								onmouseup={() => {
+									playClickSound();
+									setTimeout(() => {
+										selectAnswer(String.fromCharCode(65 + i) as 'A' | 'B' | 'C');
+									}, CLICK_DELAY);
+								}}
 							>
 								<span
 									class="font-apertura-black inline-block translate-y-5 text-[12.98rem] leading-none {String.fromCharCode(
@@ -339,7 +404,7 @@
 			{/if}
 		{:else if gameState === GAME_STATES.RESULT}
 			{#if finalSegment && selectedAnswer}
-				<div class="mt-32 flex h-full w-full flex-col items-center text-[7.33rem]">
+				<div class="mt-32 flex h-full w-full flex-col items-center text-center text-[7.33rem]">
 					{@render splitText(finalSegment.text)}
 					<div class="mt-28 flex flex-col items-center">
 						<div
@@ -391,7 +456,15 @@
 					</div>
 				</div>
 				<div class="mb-auto flex -translate-y-[15rem] items-center justify-center">
-					{@render button({ label: 'Start over', onclick: () => (gameState = GAME_STATES.START) })}
+					{@render button({
+						label: 'Start over',
+						onmouseup: () => {
+							playClickSound();
+							setTimeout(() => {
+								gameState = GAME_STATES.START;
+							}, CLICK_DELAY);
+						}
+					})}
 				</div>
 			{:else}
 				<div class="my-auto -translate-y-[10rem] text-center leading-none">
@@ -410,10 +483,23 @@
 					</div>
 				</div>
 				<div class="mb-auto flex -translate-y-[12rem] flex-col items-center justify-center">
-					{@render button({ label: 'Start over', onclick: () => (gameState = GAME_STATES.START) })}
+					{@render button({
+						label: 'Start over',
+						onmouseup: () => {
+							playClickSound();
+							setTimeout(() => {
+								gameState = GAME_STATES.START;
+							}, CLICK_DELAY);
+						}
+					})}
 					<button
-						class="font-apertura-black text-vivid-sky mt-20 cursor-pointer text-[6.11rem] leading-none underline"
-						onclick={() => (gameState = GAME_STATES.SPIN)}
+						class="font-apertura-black text-vivid-sky mt-20 cursor-pointer text-[6.11rem] leading-none underline transition-transform active:scale-90"
+						onmouseup={() => {
+							playClickSound();
+							setTimeout(() => {
+								gameState = GAME_STATES.SPIN;
+							}, CLICK_DELAY);
+						}}
 					>
 						Try again
 					</button>
@@ -429,17 +515,17 @@
 	</div>
 {/snippet}
 
-{#snippet button({ label, onclick }: { label: string; onclick: () => void })}
+{#snippet button({ label, onmouseup }: { label: string; onmouseup: () => void })}
 	<button
-		{onclick}
-		class="font-apertura-black bg-vivid-sky cursor-pointer rounded-[2.29rem] px-48 py-12 text-[6.11rem] leading-none text-[#23475F]"
+		{onmouseup}
+		class="font-apertura-black bg-vivid-sky cursor-pointer rounded-[2.29rem] px-48 py-12 text-[6.11rem] leading-none text-[#23475F] transition-transform active:scale-90"
 	>
 		<span class="inline-block translate-y-1">{label}</span>
 	</button>
 {/snippet}
 
 {#snippet splitText(text: string)}
-	<div class="font-apertura-black text-vivid-sky text-shadow-small">
+	<div class="font-apertura-black text-vivid-sky text-shadow-small leading-[1.2]">
 		{#if text.split(' ').length && text.split(' ').length > 1}
 			{text.split(' ').slice(0, -1).join(' ')}
 			<span class="text-aquamarineo">{text.split(' ').pop()}</span>

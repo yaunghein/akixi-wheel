@@ -5,8 +5,17 @@
 	let {
 		segmentColor = $bindable(),
 		gameState = $bindable(),
-		finalSegment = $bindable()
+		finalSegment = $bindable(),
+		CLICK_DELAY = $bindable(200),
+		clickSound
 	} = $props();
+
+	const playClickSound = () => {
+		if (clickSound) {
+			clickSound.currentTime = 0; // Reset to start
+			clickSound.play();
+		}
+	};
 
 	type QuizQuestion = {
 		text: string;
@@ -250,26 +259,30 @@
 	}
 
 	function spinWheel() {
-		if (gameState === GAME_STATES.START) {
-			gameState = GAME_STATES.FORM;
-			return;
-		}
+		playClickSound();
 
-		if (!isSpinning) {
-			isSpinning = true;
-			// Random initial speed between 0.04 and 0.06 for faster spins
-			spinSpeed = 0.04 + Math.random() * 0.02;
-			lastTimestamp = 0;
-			requestAnimationFrame(animate);
-		}
+		setTimeout(() => {
+			if (gameState === GAME_STATES.START) {
+				gameState = GAME_STATES.FORM;
+				return;
+			}
+
+			if (!isSpinning) {
+				isSpinning = true;
+				// Random initial speed between 0.04 and 0.06 for faster spins
+				spinSpeed = 0.04 + Math.random() * 0.02;
+				lastTimestamp = 0;
+				requestAnimationFrame(animate);
+			}
+		}, CLICK_DELAY);
 	}
 </script>
 
 <div class="relative mx-auto flex aspect-square w-full max-w-[90vw] items-center justify-center">
 	<canvas bind:this={canvas} class="block aspect-square h-full rounded-full"></canvas>
 	<button
-		onclick={spinWheel}
-		class="font-apertura-black absolute top-1/2 left-1/2 flex aspect-square h-[19.55rem] -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-[1rem] border-[#23475F] bg-white text-[5.2rem] leading-none text-[#23475F] uppercase transition-all duration-300 disabled:cursor-not-allowed"
+		onmouseup={spinWheel}
+		class="font-apertura-black absolute top-1/2 left-1/2 flex aspect-square h-[19.55rem] -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-[1rem] border-[#23475F] bg-white text-[5.2rem] leading-none text-[#23475F] uppercase transition-all duration-300 active:scale-90 disabled:cursor-not-allowed"
 		disabled={isSpinning}
 	>
 		<span class="translate-y-3 whitespace-nowrap">
