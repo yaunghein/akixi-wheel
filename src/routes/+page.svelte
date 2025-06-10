@@ -31,7 +31,8 @@
 			text: '“Does Teams tell you which missed calls were never returned?”',
 			choices: ['YES', 'NO', 'Only via a third-party tool ly via a third-party tool'],
 			correct: 'A',
-			explanation: 'Teams does not tell you which missed calls were never returned.'
+			explanation:
+				'Only Akixi fills this gap with real-time missed call tracking, optimising revenue and customer satisfaction.'
 		}
 	});
 	// let finalSegment: WheelSegment | null = $state(null);
@@ -256,31 +257,19 @@
 				</div> -->
 			</div>
 		{:else if gameState === GAME_STATES.LANDED}
-			<div class="my-auto text-center text-[7.33rem] leading-none">
-				<div class="font-apertura-black">You landed on</div>
-				<div class="font-apertura-black text-vivid-sky text-shadow-small">
-					{#if finalSegment?.text.split(' ').length && finalSegment?.text.split(' ').length > 1}
-						{finalSegment?.text.split(' ').slice(0, -1).join(' ')}
-						<span class="text-aquamarineo">{finalSegment?.text.split(' ').pop()}</span>
-					{:else}
-						{finalSegment?.text}
-					{/if}
+			{#if finalSegment}
+				<div class="my-auto text-center text-[7.33rem] leading-none">
+					<div class="font-apertura-black">You landed on</div>
+					{@render splitText(finalSegment.text)}
 				</div>
-			</div>
-			<div class="my-auto flex items-center justify-center">
-				{@render button({ label: 'Continue', onclick: () => (gameState = GAME_STATES.QUIZ) })}
-			</div>
+				<div class="my-auto flex items-center justify-center">
+					{@render button({ label: 'Continue', onclick: () => (gameState = GAME_STATES.QUIZ) })}
+				</div>
+			{/if}
 		{:else if gameState === GAME_STATES.QUIZ}
 			{#if finalSegment}
 				<div class="mt-32 flex h-full w-full flex-col items-center text-[7.33rem]">
-					<div class="font-apertura-black text-vivid-sky text-shadow-small">
-						{#if finalSegment?.text.split(' ').length && finalSegment?.text.split(' ').length > 1}
-							{finalSegment?.text.split(' ').slice(0, -1).join(' ')}
-							<span class="text-aquamarineo">{finalSegment?.text.split(' ').pop()}</span>
-						{:else}
-							{finalSegment?.text}
-						{/if}
-					</div>
+					{@render splitText(finalSegment.text)}
 					<p
 						class="text-shadow-small font-apertura-medium mx-auto mt-28 max-w-[73.5rem] text-center text-[4.43rem] leading-[1.2]"
 					>
@@ -318,7 +307,10 @@
 								onclick={() => selectAnswer(answer as 'A' | 'B' | 'C')}
 							>
 								<span
-									class="font-apertura-black inline-block translate-y-5 text-[12.98rem] leading-none"
+									class="font-apertura-black inline-block translate-y-5 text-[12.98rem] leading-none {answer ===
+									'C'
+										? '-translate-x-2'
+										: ''}"
 								>
 									{answer}
 								</span>
@@ -329,34 +321,43 @@
 			{/if}
 		{:else if gameState === GAME_STATES.RESULT}
 			{#if finalSegment && selectedAnswer}
-				<div
-					class="flex h-full w-full flex-col items-center justify-center bg-neutral-600 p-8 text-white"
-				>
-					<h2 class="mb-2 text-2xl font-bold">{finalSegment.text}</h2>
-					<div class="mb-6 flex flex-col items-center">
+				<div class="mt-32 flex h-full w-full flex-col items-center text-[7.33rem]">
+					{@render splitText(finalSegment.text)}
+					<div class="mt-28 flex flex-col items-center">
 						<div
-							class="mb-4 rounded-lg px-8 py-4 text-4xl font-bold"
-							style="background:{selectedAnswer === 'A'
-								? '#2fffa3'
+							class="shadow-box relative grid aspect-square w-[15.28rem] place-items-center rounded-[2.29rem] text-white"
+							style="background: {selectedAnswer === 'A'
+								? '#22f4ad'
 								: selectedAnswer === 'B'
-									? '#3b82f6'
-									: '#2fd6ff'};color:#222"
+									? '#4450ff'
+									: '#1cd2fa'}"
 						>
-							{selectedAnswer}
+							<span
+								class="font-apertura-black inline-block translate-y-5 text-[12.98rem] leading-none {selectedAnswer ===
+								'C'
+									? '-translate-x-1'
+									: ''}"
+							>
+								{selectedAnswer}
+							</span>
 						</div>
 						{#if isCorrect}
-							<div class="mb-2 text-4xl font-bold text-green-400">Correct!</div>
+							<div
+								class="font-apertura-black text-shadow-small text-vivid-sky mt-32 text-[15rem] leading-none"
+							>
+								Correct!
+							</div>
 						{:else}
-							<div class="mb-2 text-4xl font-bold text-red-500">Wrong!</div>
+							<div
+								class="font-apertura-black text-shadow-small text-tomato mt-32 text-[15rem] leading-none"
+							>
+								Wrong!
+							</div>
 						{/if}
 					</div>
-					<p class="text-center">
+					<p class="mx-auto mt-20 max-w-[70rem] text-center text-[4.58rem] leading-[1.2]">
 						{finalSegment.question.explanation}
 					</p>
-					<button
-						class="mt-8 rounded-lg bg-white px-6 py-2 text-lg font-bold text-blue-600"
-						onclick={() => (gameState = GAME_STATES.START)}>Back to Start</button
-					>
 				</div>
 			{/if}
 		{/if}
@@ -376,4 +377,15 @@
 	>
 		<span class="inline-block translate-y-1">{label}</span>
 	</button>
+{/snippet}
+
+{#snippet splitText(text: string)}
+	<div class="font-apertura-black text-vivid-sky text-shadow-small">
+		{#if text.split(' ').length && text.split(' ').length > 1}
+			{text.split(' ').slice(0, -1).join(' ')}
+			<span class="text-aquamarineo">{text.split(' ').pop()}</span>
+		{:else}
+			{text}
+		{/if}
+	</div>
 {/snippet}
