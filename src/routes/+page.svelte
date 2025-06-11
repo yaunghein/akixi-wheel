@@ -9,7 +9,7 @@
 	import { onMount } from 'svelte';
 
 	let segmentColor = $state('#FF6B6B');
-	let gameState = $state(GAME_STATES.LANDED) as TGameState;
+	let gameState = $state(GAME_STATES.START) as TGameState;
 	let showWheel = $derived(gameState === GAME_STATES.START || gameState === GAME_STATES.SPIN);
 
 	const CLICK_DELAY = 150; // Single place to control all click delays
@@ -37,18 +37,18 @@
 		question: QuizQuestion;
 	};
 
-	let finalSegment: WheelSegment | null = $state({
-		text: 'Call Tagging & Categorisation',
-		color: '#1cd2fa',
-		question: {
-			text: 'Which feature helps you recover missed sales opportunities?',
-			choices: ['Missed Call Recovery', 'Call Recording', 'Voicemail'],
-			correct: 'A',
-			explanation:
-				'Missed Call Recovery helps you recover missed sales opportunities by tracking and alerting you to missed calls.'
-		}
-	});
-	// let finalSegment: WheelSegment | null = $state(null);
+	// let finalSegment: WheelSegment | null = $state({
+	// 	text: 'Call Tagging & Categorisation',
+	// 	color: '#1cd2fa',
+	// 	question: {
+	// 		text: 'Which feature helps you recover missed sales opportunities?',
+	// 		choices: ['Missed Call Recovery', 'Call Recording', 'Voicemail'],
+	// 		correct: 'A',
+	// 		explanation:
+	// 			'Missed Call Recovery helps you recover missed sales opportunities by tracking and alerting you to missed calls.'
+	// 	}
+	// });
+	let finalSegment: WheelSegment | null = $state(null);
 
 	type FormState = {
 		first_name: string;
@@ -492,17 +492,18 @@
 							}, CLICK_DELAY);
 						}
 					})}
-					<button
-						class="font-apertura-black text-vivid-sky mt-20 cursor-pointer text-[6.11rem] leading-none underline transition-transform active:scale-90"
-						onmouseup={() => {
-							playClickSound();
-							setTimeout(() => {
-								gameState = GAME_STATES.SPIN;
-							}, CLICK_DELAY);
-						}}
-					>
-						Try again
-					</button>
+
+					<div class="mt-20">
+						{@render button({
+							label: 'Try again',
+							onmouseup: () => {
+								playClickSound();
+								setTimeout(() => {
+									gameState = GAME_STATES.SPIN;
+								}, CLICK_DELAY);
+							}
+						})}
+					</div>
 				</div>
 			{/if}
 		{/if}
