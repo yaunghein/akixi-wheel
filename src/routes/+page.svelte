@@ -7,6 +7,8 @@
 	import Indicator from '$lib/components/Indicator.svelte';
 	import BackButton from '$lib/components/BackButton.svelte';
 	import { onMount } from 'svelte';
+	import { scale } from 'svelte/transition';
+	import { bounceOut } from 'svelte/easing';
 
 	let segmentColor = $state('#FF6B6B');
 	let gameState = $state(GAME_STATES.START) as TGameState;
@@ -69,6 +71,8 @@
 
 	let activeField = $state<HTMLInputElement | null>(null);
 	let errorMessage = $state<string | null>(null);
+	let keyboardVisible = $state(false);
+	let blurTimeout: ReturnType<typeof setTimeout> | null = $state(null);
 
 	// Quiz state
 	let selectedAnswer: 'A' | 'B' | 'C' | null = $state(null);
@@ -125,13 +129,35 @@
 	};
 
 	const handleFieldFocus = (event: FocusEvent) => {
+		if (blurTimeout) {
+			clearTimeout(blurTimeout);
+			blurTimeout = null;
+		}
 		activeField = event.target as HTMLInputElement;
 		errorMessage = null; // Clear error when user starts typing
+		keyboardVisible = true;
+		if (clickSound) {
+			clickSound.play();
+		}
+	};
+
+	const handleFieldBlur = () => {
+		blurTimeout = setTimeout(() => {
+			// Only hide keyboard if no input is focused
+			if (!document.activeElement?.matches('input')) {
+				activeField = null;
+				keyboardVisible = false;
+			}
+		}, 0);
 	};
 
 	const handleCheckboxChange = (event: Event) => {
 		const checkbox = event.target as HTMLInputElement;
 		formState.stay_in_touch = checkbox.checked;
+		if (clickSound) {
+			clickSound.play();
+		}
+		keyboardVisible = false;
 	};
 
 	async function selectAnswer(answer: 'A' | 'B' | 'C') {
@@ -227,21 +253,22 @@
 				</div>
 			</div>
 		{:else if gameState === GAME_STATES.FORM}
-			<div class="flex h-full w-full flex-col">
+			<button
+				onmouseup={() => {
+					playClickSound();
+					setTimeout(() => {
+						gameState = GAME_STATES.START;
+					}, CLICK_DELAY);
+				}}
+				class="absolute top-8 right-8 aspect-[1/0.96] w-[7rem] cursor-pointer transition-transform active:scale-90"
+			>
+				<BackButton />
+			</button>
+			<div class="relative flex h-full w-full flex-col">
 				<div class="mt-20 flex justify-center">
 					{@render spinAndWin()}
 				</div>
-				<button
-					onmouseup={() => {
-						playClickSound();
-						setTimeout(() => {
-							gameState = GAME_STATES.START;
-						}, CLICK_DELAY);
-					}}
-					class="absolute top-8 right-8 aspect-[1/0.96] w-[7rem] cursor-pointer transition-transform active:scale-90"
-				>
-					<BackButton />
-				</button>
+
 				<div class="mx-auto mt-32 flex h-full w-full max-w-[73.5rem] flex-col gap-4">
 					<div class="flex gap-11">
 						<label class="flex flex-col gap-2">
@@ -251,10 +278,12 @@
 							<input
 								type="text"
 								name="first_name"
-								class="text-oxford-blue shadow-form-input border-electric-indigo focus:border-vivid-sky h-[7.94rem] w-[25.05rem] rounded-[1.53rem] border-2 bg-[#D9D9D9] px-6 text-[3.36rem] leading-none placeholder:text-[#B4B4B4] focus:ring-0 focus:outline-none"
+								autocomplete="off"
+								class="text-oxford-blue shadow-form-input border-electric-indigo focus:border-vivid-sky h-[7.94rem] w-[25.05rem] rounded-[1.53rem] border-2 bg-[#D9D9D9] px-6 pt-5 text-[3.36rem] leading-none placeholder:text-[#B4B4B4] focus:ring-0 focus:outline-none"
 								bind:value={formState.first_name}
 								placeholder="John"
 								onfocus={handleFieldFocus}
+								onblur={handleFieldBlur}
 							/>
 						</label>
 						<label class="flex flex-1 flex-col gap-2">
@@ -264,10 +293,12 @@
 							<input
 								type="text"
 								name="last_name"
+								autocomplete="off"
 								placeholder="Doe"
-								class="text-oxford-blue shadow-form-input border-electric-indigo focus:border-vivid-sky h-[7.94rem] w-full rounded-[1.53rem] border-2 bg-[#D9D9D9] px-6 text-[3.36rem] leading-none placeholder:text-[#B4B4B4] focus:ring-0 focus:outline-none"
+								class="text-oxford-blue shadow-form-input border-electric-indigo focus:border-vivid-sky h-[7.94rem] w-full rounded-[1.53rem] border-2 bg-[#D9D9D9] px-6 pt-5 text-[3.36rem] leading-none placeholder:text-[#B4B4B4] focus:ring-0 focus:outline-none"
 								bind:value={formState.last_name}
 								onfocus={handleFieldFocus}
+								onblur={handleFieldBlur}
 							/>
 						</label>
 					</div>
@@ -278,10 +309,12 @@
 						<input
 							type="email"
 							name="email"
-							class="text-oxford-blue shadow-form-input border-electric-indigo focus:border-vivid-sky h-[7.94rem] w-full rounded-[1.53rem] border-2 bg-[#D9D9D9] px-6 text-[3.36rem] leading-none placeholder:text-[#B4B4B4] focus:ring-0 focus:outline-none"
+							autocomplete="off"
+							class="text-oxford-blue shadow-form-input border-electric-indigo focus:border-vivid-sky h-[7.94rem] w-full rounded-[1.53rem] border-2 bg-[#D9D9D9] px-6 pt-5 text-[3.36rem] leading-none placeholder:text-[#B4B4B4] focus:ring-0 focus:outline-none"
 							placeholder="johndoe@gmail.com"
 							bind:value={formState.email}
 							onfocus={handleFieldFocus}
+							onblur={handleFieldBlur}
 						/>
 					</label>
 					<label class="mt-10 flex items-center justify-between gap-2 pr-2">
@@ -289,38 +322,48 @@
 							Yes, I would like to stay in touch with Akixi.
 						</span>
 						<input
+							onclick={handleCheckboxChange}
 							type="checkbox"
 							name="terms"
 							class="checked:bg-vivid-sky checked:text-vivid-sky h-[4.12rem] w-[4.12rem] !appearance-none rounded-[0.75rem] border-2 border-none bg-[#D9D9D9]"
 						/>
 					</label>
-					<a
-						href="/privacy-policy"
-						class="text-aquamarineo font-apertura-medium mt-10 inline-block text-[3.36rem] leading-none underline"
+					<button
+						class="text-aquamarineo font-apertura-medium mt-10 inline-block text-left text-[3.36rem] leading-none underline"
 					>
 						Privacy Policy
-					</a>
+					</button>
 					{#if errorMessage}
 						<div class="mt-10">
 							<p class="font-apertura-black text-tomato text-[3.36rem]">Error: {errorMessage}</p>
 						</div>
 					{/if}
 					<div class="flex flex-1 items-center justify-center">
-						{@render button({
-							label: 'Play',
-							onmouseup: () => {
-								playClickSound();
-								setTimeout(() => {
-									gameState = GAME_STATES.SPIN;
-								}, CLICK_DELAY);
-							}
-						})}
+						{#if !keyboardVisible}
+							{@render button({
+								label: 'Play',
+								onmouseup: () => {
+									playClickSound();
+									setTimeout(() => {
+										gameState = GAME_STATES.SPIN;
+									}, CLICK_DELAY);
+								}
+							})}
+						{/if}
 					</div>
 				</div>
 
-				<!-- <div class="mt-auto">
-					<Keyboard on:keydown={onKeydown} />
-				</div> -->
+				{#if keyboardVisible}
+					<div
+						in:scale={{ duration: 500, start: 1.05, easing: bounceOut }}
+						out:scale={{ duration: 300, start: 1.05 }}
+						class="bg-electric-indigo shadow-box absolute top-auto right-0 bottom-96 left-0 py-20 transition-transform duration-300 sm:bottom-80"
+					>
+						<div class="mx-auto max-w-[73.5rem]">
+							<Keyboard on:keydown={onKeydown} />
+						</div>
+					</div>
+				{/if}
 			</div>
 		{:else if gameState === GAME_STATES.LANDED}
 			{#if finalSegment}
@@ -518,6 +561,8 @@
 
 {#snippet button({ label, onmouseup }: { label: string; onmouseup: () => void })}
 	<button
+		in:scale={{ duration: 500, start: 1.05, easing: bounceOut }}
+		out:scale={{ duration: 300, start: 1.05 }}
 		{onmouseup}
 		class="font-apertura-black bg-vivid-sky cursor-pointer rounded-[2.29rem] px-48 py-12 text-[6.11rem] leading-none text-[#23475F] transition-transform active:scale-90"
 	>

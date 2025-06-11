@@ -3,7 +3,15 @@
 @plugin '@tailwindcss/typography';
 
 .key {
-	@apply !flex !items-center !justify-center;
+	@apply !mb-2 !flex !items-center !justify-center !rounded-[1.5rem] py-16 !text-[4rem] leading-[1];
+}
+
+.row {
+	@apply gap-2;
+}
+
+.key .key--Shift {
+	@apply !text-[5px];
 }
 
 @font-face {
