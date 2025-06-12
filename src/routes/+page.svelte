@@ -20,6 +20,7 @@
 
 	let clickSound: HTMLAudioElement | null = $state(null);
 	let tadaSound: HTMLAudioElement | null = $state(null);
+	let correctSound: HTMLAudioElement | null = $state(null);
 
 	let rotation = $state(0);
 
@@ -28,6 +29,8 @@
 		clickSound.load();
 		tadaSound = new Audio('/sounds/tada.mp3');
 		tadaSound.load();
+		correctSound = new Audio('/sounds/correct.wav');
+		correctSound.load();
 
 		// Add online/offline event listeners
 		if (browser) {
@@ -273,6 +276,12 @@
 	}
 
 	$effect(() => {
+		if (gameState === GAME_STATES.RESULT && isCorrect) {
+			if (correctSound) {
+				correctSound.play();
+			}
+		}
+
 		if (gameState === GAME_STATES.FINAL && isCorrect) {
 			if (tadaSound) {
 				tadaSound.play();
@@ -294,7 +303,7 @@
 		if (gameState === GAME_STATES.RESULT) {
 			const timer = setTimeout(() => {
 				gameState = GAME_STATES.FINAL;
-			}, 2000);
+			}, 5000);
 			return () => clearTimeout(timer);
 		}
 	});

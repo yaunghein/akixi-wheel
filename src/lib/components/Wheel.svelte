@@ -37,9 +37,9 @@
 			text: 'Missed Call Recovery',
 			color: '#22f4ad',
 			question: {
-				text: '“Does Teams tell you which missed calls were never returned?”',
+				text: '"Does Teams tell you which missed calls were never returned?"',
 				choices: ['YES', 'NO', 'Only via a third-party tool'],
-				correct: 'C',
+				correct: 'A',
 				explanation:
 					'Only Akixi fills this gap with real-time missed call tracking, optimising revenue and customer satisfaction.'
 			}
@@ -60,8 +60,8 @@
 			color: '#4450ff',
 			question: {
 				text: 'What is the main benefit of real-time missed call tracking?',
-				choices: ['Faster internet', 'Optimised revenue', 'Cheaper calls'],
-				correct: 'B',
+				choices: ['Optimised revenue', 'Faster internet', 'Cheaper calls'],
+				correct: 'A',
 				explanation:
 					'Real-time missed call tracking helps optimise revenue and customer satisfaction.'
 			}
@@ -93,8 +93,8 @@
 			color: '#4450ff',
 			question: {
 				text: 'Which is NOT a feature of Akixi?',
-				choices: ['Missed Call Recovery', 'Weather Forecast', 'Real-time Analytics'],
-				correct: 'B',
+				choices: ['Weather Forecast', 'Missed Call Recovery', 'Real-time Analytics'],
+				correct: 'A',
 				explanation: 'Weather Forecast is not a feature of Akixi.'
 			}
 		},
