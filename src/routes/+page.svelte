@@ -9,10 +9,12 @@
 	import { onMount } from 'svelte';
 	import { scale } from 'svelte/transition';
 	import { bounceOut } from 'svelte/easing';
+	import { browser } from '$app/environment';
 
 	let segmentColor = $state('#FF6B6B');
 	let gameState = $state(GAME_STATES.START) as TGameState;
 	let showWheel = $derived(gameState === GAME_STATES.START || gameState === GAME_STATES.SPIN);
+	let isOnline = $state(browser ? navigator.onLine : true);
 
 	const CLICK_DELAY = 150; // Single place to control all click delays
 
@@ -24,7 +26,75 @@
 		clickSound.load();
 		tadaSound = new Audio('/sounds/tada.mp3');
 		tadaSound.load();
+
+		// Add online/offline event listeners
+		if (browser) {
+			window.addEventListener('online', handleOnline);
+			window.addEventListener('offline', handleOffline);
+
+			// Check for stored form submissions when coming online
+			if (isOnline) {
+				processStoredSubmissions();
+			}
+		}
+
+		return () => {
+			if (browser) {
+				window.removeEventListener('online', handleOnline);
+				window.removeEventListener('offline', handleOffline);
+			}
+		};
 	});
+
+	const handleOnline = () => {
+		isOnline = true;
+		processStoredSubmissions();
+	};
+
+	const handleOffline = () => {
+		isOnline = false;
+	};
+
+	const processStoredSubmissions = () => {
+		const storedSubmissions = localStorage.getItem('formSubmissions');
+		if (storedSubmissions) {
+			try {
+				const submissions = JSON.parse(storedSubmissions);
+				submissions.forEach((submission: FormState) => {
+					console.log('Processing stored submission:', submission);
+				});
+				// Clear stored submissions after processing
+				localStorage.removeItem('formSubmissions');
+			} catch (error) {
+				console.error('Error processing stored submissions:', error);
+			}
+		}
+	};
+
+	const storeFormSubmission = (formData: FormState) => {
+		const storedSubmissions = localStorage.getItem('formSubmissions');
+		let submissions: FormState[] = [];
+
+		if (storedSubmissions) {
+			try {
+				submissions = JSON.parse(storedSubmissions);
+			} catch (error) {
+				console.error('Error parsing stored submissions:', error);
+			}
+		}
+
+		submissions.push(formData);
+		localStorage.setItem('formSubmissions', JSON.stringify(submissions));
+	};
+
+	const handleFormSubmit = () => {
+		if (isOnline) {
+			console.log('Form submitted:', formState);
+		} else {
+			storeFormSubmission(formState);
+		}
+		gameState = GAME_STATES.SPIN;
+	};
 
 	type QuizQuestion = {
 		text: string;
@@ -345,7 +415,7 @@
 								onmouseup: () => {
 									playClickSound();
 									setTimeout(() => {
-										gameState = GAME_STATES.SPIN;
+										handleFormSubmit();
 									}, CLICK_DELAY);
 								}
 							})}
