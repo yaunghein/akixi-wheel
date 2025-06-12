@@ -12,7 +12,7 @@
 	import { browser } from '$app/environment';
 
 	let segmentColor = $state('#FF6B6B');
-	let gameState = $state(GAME_STATES.FORM) as TGameState;
+	let gameState = $state(GAME_STATES.START) as TGameState;
 	let showWheel = $derived(gameState === GAME_STATES.START || gameState === GAME_STATES.SPIN);
 	let isOnline = $state(browser ? navigator.onLine : true);
 
@@ -304,12 +304,17 @@
 <main
 	class="bg-electric-indigo flex min-h-screen overflow-hidden text-white transition-colors duration-500"
 >
-	<div class="flex aspect-[4/7] w-full flex-col pt-28">
-		<div class="mx-auto mb-auto aspect-[1/0.27] w-[40.5rem]">
+	<div class="relative flex aspect-[4/7] w-full flex-col pt-28">
+		<img
+			src="/images/background.webp"
+			alt="Background"
+			class="absolute inset-0 h-full w-full object-cover"
+		/>
+		<div class="relative mx-auto mb-auto aspect-[1/0.27] w-[40.5rem]">
 			<Logo />
 		</div>
 		{#if showWheel}
-			<div class="flex h-full flex-col items-center text-center">
+			<div class="relative flex h-full flex-col items-center text-center">
 				<div class="mt-[7.5rem] mb-24 max-w-[65rem] text-[5.34rem] leading-none">
 					Turn Your CX's Blind Spots into your Revenue
 				</div>
@@ -367,7 +372,7 @@
 								type="text"
 								name="first_name"
 								autocomplete="off"
-								class="text-oxford-blue shadow-form-input border-electric-indigo focus:border-vivid-sky h-[7.94rem] w-[25.05rem] rounded-[1.53rem] border-2 bg-[#D9D9D9] px-6 pt-5 text-[3.36rem] leading-none placeholder:text-[#B4B4B4] focus:ring-0 focus:outline-none"
+								class="text-oxford-blue shadow-form-input focus:border-vivid-sky focus:ring-vivid-sky h-[7.94rem] w-[25.05rem] rounded-[1.53rem] border-none bg-[#D9D9D9] px-6 pt-5 text-[3.36rem] leading-none placeholder:text-[#B4B4B4] focus:ring-2 focus:outline-none"
 								bind:value={formState.first_name}
 								placeholder="John"
 								onfocus={handleFieldFocus}
@@ -383,7 +388,7 @@
 								name="last_name"
 								autocomplete="off"
 								placeholder="Doe"
-								class="text-oxford-blue shadow-form-input border-electric-indigo focus:border-vivid-sky h-[7.94rem] w-full rounded-[1.53rem] border-2 bg-[#D9D9D9] px-6 pt-5 text-[3.36rem] leading-none placeholder:text-[#B4B4B4] focus:ring-0 focus:outline-none"
+								class="text-oxford-blue shadow-form-input focus:border-vivid-sky focus:ring-vivid-sky h-[7.94rem] w-full rounded-[1.53rem] border-none bg-[#D9D9D9] px-6 pt-5 text-[3.36rem] leading-none placeholder:text-[#B4B4B4] focus:ring-2 focus:outline-none"
 								bind:value={formState.last_name}
 								onfocus={handleFieldFocus}
 								onblur={handleFieldBlur}
@@ -398,7 +403,7 @@
 							type="email"
 							name="email"
 							autocomplete="off"
-							class="text-oxford-blue shadow-form-input border-electric-indigo focus:border-vivid-sky h-[7.94rem] w-full rounded-[1.53rem] border-2 bg-[#D9D9D9] px-6 pt-5 text-[3.36rem] leading-none placeholder:text-[#B4B4B4] focus:ring-0 focus:outline-none"
+							class="text-oxford-blue shadow-form-input focus:border-vivid-sky focus:ring-vivid-sky h-[7.94rem] w-full rounded-[1.53rem] border-none bg-[#D9D9D9] px-6 pt-5 text-[3.36rem] leading-none placeholder:text-[#B4B4B4] focus:ring-2 focus:outline-none"
 							placeholder="johndoe@gmail.com"
 							bind:value={formState.email}
 							onfocus={handleFieldFocus}
@@ -455,11 +460,11 @@
 			</div>
 		{:else if gameState === GAME_STATES.LANDED}
 			{#if finalSegment}
-				<div class="my-auto text-center text-[7.33rem] leading-none">
+				<div class="relative my-auto text-center text-[7.33rem] leading-none">
 					<div class="font-apertura-black mb-2">You landed on</div>
 					{@render splitText(finalSegment.text)}
 				</div>
-				<div class="my-auto flex items-center justify-center">
+				<div class="relative my-auto flex items-center justify-center">
 					{@render button({
 						label: 'Continue',
 						onmouseup: () => {
@@ -473,7 +478,9 @@
 			{/if}
 		{:else if gameState === GAME_STATES.QUIZ}
 			{#if finalSegment}
-				<div class="mt-32 flex h-full w-full flex-col items-center text-center text-[7.33rem]">
+				<div
+					class="relative mt-32 flex h-full w-full flex-col items-center text-center text-[7.33rem]"
+				>
 					{@render splitText(finalSegment.text)}
 					<p
 						class="text-shadow-small font-apertura-medium mx-auto mt-28 max-w-[73.5rem] text-center text-[4.43rem] leading-[1.2]"
@@ -535,7 +542,9 @@
 			{/if}
 		{:else if gameState === GAME_STATES.RESULT}
 			{#if finalSegment && selectedAnswer}
-				<div class="mt-32 flex h-full w-full flex-col items-center text-center text-[7.33rem]">
+				<div
+					class="relative mt-32 flex h-full w-full flex-col items-center text-center text-[7.33rem]"
+				>
 					{@render splitText(finalSegment.text)}
 					<div class="mt-28 flex flex-col items-center">
 						<div
@@ -576,7 +585,7 @@
 			{/if}
 		{:else if gameState === GAME_STATES.FINAL}
 			{#if isCorrect}
-				<div class="my-auto text-center leading-none">
+				<div class="relative my-auto text-center leading-none">
 					<div class="font-apertura-black text-aquamarineo text-shadow-small text-[10.08rem]">
 						Congratulations!
 					</div>
@@ -586,7 +595,7 @@
 						Collect your prize
 					</div>
 				</div>
-				<div class="mb-auto flex -translate-y-[15rem] items-center justify-center">
+				<div class="relative mb-auto flex -translate-y-[15rem] items-center justify-center">
 					{@render button({
 						label: 'Start over',
 						onmouseup: () => {
@@ -598,7 +607,7 @@
 					})}
 				</div>
 			{:else}
-				<div class="my-auto -translate-y-[10rem] text-center leading-none">
+				<div class="relative my-auto -translate-y-[10rem] text-center leading-none">
 					<img
 						src="/images/sad.svg"
 						alt="Sad face"
@@ -613,7 +622,9 @@
 						Please try again
 					</div>
 				</div>
-				<div class="mb-auto flex -translate-y-[12rem] flex-col items-center justify-center">
+				<div
+					class="relative mb-auto flex -translate-y-[12rem] flex-col items-center justify-center"
+				>
 					{@render button({
 						label: 'Start over',
 						onmouseup: () => {
