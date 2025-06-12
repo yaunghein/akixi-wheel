@@ -90,6 +90,9 @@
 	};
 
 	const handleFormSubmit = () => {
+		if (!validateForm()) {
+			return;
+		}
 		if (isOnline) {
 			console.log('Form submitted:', formState);
 		} else {
@@ -145,6 +148,7 @@
 	let errorMessage = $state<string | null>(null);
 	let keyboardVisible = $state(false);
 	let blurTimeout: ReturnType<typeof setTimeout> | null = $state(null);
+	let shouldAutoFocus = $state(true);
 
 	// Quiz state
 	let selectedAnswer: 'A' | 'B' | 'C' | null = $state(null);
@@ -164,11 +168,7 @@
 			errorMessage = 'Last name is required';
 			return false;
 		}
-		if (!formState.email.trim()) {
-			errorMessage = 'Email is required';
-			return false;
-		}
-		if (!validateEmail(formState.email)) {
+		if (formState.email.trim() && !validateEmail(formState.email)) {
 			errorMessage = 'Please enter a valid email address';
 			return false;
 		}
@@ -210,6 +210,27 @@
 			});
 		}
 	};
+
+	$effect(() => {
+		if (gameState === GAME_STATES.FORM && shouldAutoFocus) {
+			const firstNameInput = document.querySelector('input[name="first_name"]') as HTMLInputElement;
+			const lastNameInput = document.querySelector('input[name="last_name"]') as HTMLInputElement;
+			const emailInput = document.querySelector('input[name="email"]') as HTMLInputElement;
+
+			if (firstNameInput && lastNameInput && emailInput) {
+				if (!formState.first_name.trim()) {
+					firstNameInput.focus();
+				} else if (!formState.last_name.trim()) {
+					lastNameInput.focus();
+				} else if (!formState.email.trim()) {
+					emailInput.focus();
+				}
+			}
+			shouldAutoFocus = false;
+		} else if (gameState !== GAME_STATES.FORM) {
+			shouldAutoFocus = true;
+		}
+	});
 
 	const handleFieldFocus = (event: FocusEvent) => {
 		if (blurTimeout) {
@@ -426,7 +447,7 @@
 					</button>
 					{#if errorMessage}
 						<div class="mt-10">
-							<p class="font-apertura-black text-tomato text-[3.36rem]">Error: {errorMessage}</p>
+							<p class="font-apertura-black text-tomato text-[3.36rem]">{errorMessage}</p>
 						</div>
 					{/if}
 					<div class="flex flex-1 items-center justify-center">
@@ -462,7 +483,7 @@
 					<div class="font-apertura-black mb-2">You landed on</div>
 					{@render splitText(finalSegment.text)}
 				</div>
-				<div class="relative my-auto flex items-center justify-center">
+				<div class="relative my-auto flex -translate-y-[15rem] items-center justify-center">
 					{@render button({
 						label: 'Continue',
 						onmouseup: () => {
