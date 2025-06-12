@@ -12,7 +12,7 @@
 	import { browser } from '$app/environment';
 
 	let segmentColor = $state('#FF6B6B');
-	let gameState = $state(GAME_STATES.SPIN) as TGameState;
+	let gameState = $state(GAME_STATES.FORM) as TGameState;
 	let showWheel = $derived(gameState === GAME_STATES.START || gameState === GAME_STATES.SPIN);
 	let isOnline = $state(browser ? navigator.onLine : true);
 
@@ -180,6 +180,7 @@
 	const onKeydown = (event: { detail: string }) => {
 		errorMessage = null;
 		const key = event.detail;
+		console.log('key', key);
 
 		if (key === 'Enter' || key === 'Return') {
 			if (validateForm()) {
@@ -194,9 +195,20 @@
 
 			if (key === 'Backspace') {
 				formState[fieldName] = formState[fieldName].slice(0, -1);
+			} else if (key === 'Space') {
+				formState[fieldName] = formState[fieldName] + ' ';
 			} else if (key.length === 1) {
 				formState[fieldName] = formState[fieldName] + key;
 			}
+
+			// Move caret to end and scroll input so last character is visible
+			const len = formState[fieldName].length;
+			requestAnimationFrame(() => {
+				if (activeField) {
+					activeField.setSelectionRange(len, len);
+					activeField.scrollLeft = activeField.scrollWidth;
+				}
+			});
 		}
 	};
 
