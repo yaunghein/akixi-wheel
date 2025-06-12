@@ -21,6 +21,8 @@
 	let clickSound: HTMLAudioElement | null = $state(null);
 	let tadaSound: HTMLAudioElement | null = $state(null);
 
+	let rotation = $state(0);
+
 	onMount(() => {
 		clickSound = new Audio('/sounds/click.mp3');
 		clickSound.load();
@@ -302,7 +304,10 @@
 				{@render spinAndWin()}
 				<div class="my-auto w-full">
 					<div class="relative p-[0.65rem] sm:p-[2rem]">
-						<div class="pointer-events-none absolute inset-0 h-full w-full rotate-[26.2deg]">
+						<div
+							class="pointer-events-none absolute inset-0 h-full w-full"
+							style="transform: rotate({(rotation * 180) / Math.PI + 26.2}deg);"
+						>
 							<WheelBackgroundWithDots />
 						</div>
 						<div class="w-full">
@@ -310,6 +315,7 @@
 								bind:segmentColor
 								bind:gameState
 								bind:finalSegment
+								bind:rotation
 								{CLICK_DELAY}
 								{clickSound}
 							/>

@@ -7,7 +7,8 @@
 		gameState = $bindable(),
 		finalSegment = $bindable(),
 		CLICK_DELAY = $bindable(200),
-		clickSound
+		clickSound,
+		rotation = $bindable(0)
 	} = $props();
 
 	const playClickSound = () => {
@@ -111,7 +112,6 @@
 
 	let canvas: HTMLCanvasElement;
 	let ctx: CanvasRenderingContext2D;
-	let rotation = $state(0);
 	let isSpinning = $state(false);
 	let spinSpeed = $state(0);
 	let spinDeceleration = $state(0.996);
