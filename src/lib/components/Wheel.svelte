@@ -151,9 +151,19 @@
 		const centerY = canvas.height / (window.devicePixelRatio || 1) / 2;
 		const radius = Math.min(centerX, centerY) - 10;
 
-		// Clear canvas
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+		// Draw the main wheel (fully opaque)
+		drawWheelSegments(ctx, centerX, centerY, radius, rotation);
+	}
+
+	function drawWheelSegments(
+		ctx: CanvasRenderingContext2D,
+		centerX: number,
+		centerY: number,
+		radius: number,
+		rotation: number
+	) {
 		// Draw segments
 		const segmentAngle = (2 * Math.PI) / wheelData.length;
 		wheelData.forEach((segment, index) => {
@@ -269,8 +279,8 @@
 
 			if (!isSpinning) {
 				isSpinning = true;
-				// Random initial speed between 0.04 and 0.06 for faster spins
-				spinSpeed = 0.04 + Math.random() * 0.02;
+				// Faster initial speed
+				spinSpeed = 0.1 + Math.random() * 0.04;
 				lastTimestamp = 0;
 				requestAnimationFrame(animate);
 			}
