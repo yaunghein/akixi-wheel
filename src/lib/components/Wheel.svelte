@@ -114,7 +114,7 @@
 	let ctx: CanvasRenderingContext2D;
 	let isSpinning = $state(false);
 	let spinSpeed = $state(0);
-	let spinDeceleration = $state(0.996);
+	let spinDeceleration = $state(0.997);
 	let lastTimestamp = $state(0);
 	let fontLoaded = $state(false);
 
@@ -279,8 +279,10 @@
 
 			if (!isSpinning) {
 				isSpinning = true;
-				// Faster initial speed
-				spinSpeed = 0.1 + Math.random() * 0.04;
+				// Slower initial speed with smaller random variation
+				spinSpeed = 0.02 + Math.random() * 0.03 + Math.random() * 0.02;
+				// Add random rotation to ensure different final positions
+				rotation += Math.random() * Math.PI * 2;
 				lastTimestamp = 0;
 				requestAnimationFrame(animate);
 			}

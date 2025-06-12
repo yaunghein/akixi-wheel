@@ -149,7 +149,6 @@
 	// Quiz state
 	let selectedAnswer: 'A' | 'B' | 'C' | null = $state(null);
 	let isCorrect: boolean | null = $state(null);
-	let isBlinking = $state(false);
 
 	const validateEmail = (email: string) => {
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -246,20 +245,6 @@
 
 	async function selectAnswer(answer: 'A' | 'B' | 'C') {
 		selectedAnswer = answer;
-		isBlinking = true;
-
-		// Blink twice with faster timing
-		for (let i = 0; i < 2; i++) {
-			await new Promise((resolve) => setTimeout(resolve, 150));
-			isBlinking = false;
-			await new Promise((resolve) => setTimeout(resolve, 150));
-			isBlinking = true;
-		}
-
-		isBlinking = false;
-		// Add a pause before showing result
-		await new Promise((resolve) => setTimeout(resolve, 750));
-
 		if (finalSegment && finalSegment.question) {
 			isCorrect = finalSegment.question.correct === answer;
 		}
@@ -314,6 +299,19 @@
 			<Logo />
 		</div>
 		{#if showWheel}
+			{#if gameState === GAME_STATES.SPIN}
+				<button
+					onmouseup={() => {
+						playClickSound();
+						setTimeout(() => {
+							gameState = GAME_STATES.FORM;
+						}, CLICK_DELAY);
+					}}
+					class="absolute top-8 right-8 aspect-[1/0.96] w-[7rem] cursor-pointer transition-transform active:scale-90"
+				>
+					<BackButton />
+				</button>
+			{/if}
 			<div class="relative flex h-full flex-col items-center text-center">
 				<div class="mt-[7.5rem] mb-24 max-w-[65rem] text-[5.34rem] leading-none">
 					Turn Your CX's Blind Spots into your Revenue
@@ -511,14 +509,7 @@
 						{#each finalSegment.question.choices as _, i}
 							<button
 								class="shadow-box relative aspect-square w-[15.28rem] rounded-[2.29rem] transition-transform active:scale-90"
-								style="background: {i === 0
-									? '#22f4ad'
-									: i === 1
-										? '#4450ff'
-										: '#1cd2fa'}; opacity: {selectedAnswer === String.fromCharCode(65 + i) &&
-								isBlinking
-									? 0
-									: 1}"
+								style="background: {i === 0 ? '#22f4ad' : i === 1 ? '#4450ff' : '#1cd2fa'}"
 								onmouseup={() => {
 									playClickSound();
 									setTimeout(() => {
