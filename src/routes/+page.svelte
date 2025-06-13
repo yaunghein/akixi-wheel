@@ -186,7 +186,6 @@
 	const onKeydown = (event: { detail: string }) => {
 		errorMessage = null;
 		const key = event.detail;
-		console.log('key', key);
 
 		if (key === 'Enter' || key === 'Return') {
 			if (validateForm()) {
@@ -211,7 +210,7 @@
 			const len = formState[fieldName].length;
 			requestAnimationFrame(() => {
 				if (activeField) {
-					activeField.setSelectionRange(len, len);
+					activeField.focus();
 					activeField.scrollLeft = activeField.scrollWidth;
 				}
 			});

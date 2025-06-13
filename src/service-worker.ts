@@ -85,3 +85,9 @@ sw.addEventListener('fetch', (event) => {
 
 	event.respondWith(respond());
 });
+
+sw.addEventListener('message', (event) => {
+	if (event.data && event.data.type === 'SKIP_WAITING') {
+		sw.skipWaiting();
+	}
+});
