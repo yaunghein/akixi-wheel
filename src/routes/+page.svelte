@@ -325,7 +325,7 @@
 
 	const playClickSound = () => {
 		if (clickSound) {
-			clickSound.currentTime = 0.5; // Reset to start
+			clickSound.currentTime = 0.5;
 			clickSound.play();
 		}
 	};
@@ -346,7 +346,7 @@
 		{#if showWheel}
 			{#if gameState === GAME_STATES.SPIN}
 				<button
-					onclick={() => {
+					onmouseup={() => {
 						playClickSound();
 						gameState = GAME_STATES.FORM;
 					}}
@@ -387,7 +387,7 @@
 			</div>
 		{:else if gameState === GAME_STATES.FORM}
 			<button
-				onclick={() => {
+				onmouseup={() => {
 					playClickSound();
 					gameState = GAME_STATES.START;
 				}}
@@ -453,7 +453,7 @@
 							Yes, I would like to stay in touch with Akixi.
 						</span>
 						<input
-							onclick={handleCheckboxChange}
+							onmouseup={handleCheckboxChange}
 							type="checkbox"
 							name="terms"
 							class="checked:bg-vivid-sky checked:text-vivid-sky h-[4.12rem] w-[4.12rem] !appearance-none rounded-[0.75rem] border-2 border-none bg-[#D9D9D9]"
@@ -473,7 +473,7 @@
 						{#if !keyboardVisible}
 							{@render button({
 								label: 'Play',
-								onclick: () => {
+								onmouseup: () => {
 									playClickSound();
 									handleFormSubmit();
 								}
@@ -503,7 +503,7 @@
 				<div class="relative my-auto flex -translate-y-[15rem] items-center justify-center">
 					{@render button({
 						label: 'Continue',
-						onclick: () => {
+						onmouseup: () => {
 							playClickSound();
 							gameState = GAME_STATES.QUIZ;
 						}
@@ -546,7 +546,7 @@
 							<button
 								class="shadow-box relative aspect-square w-[15.28rem] rounded-[2.29rem] transition-transform active:scale-90"
 								style="background: {i === 0 ? '#22f4ad' : i === 1 ? '#4450ff' : '#1cd2fa'}"
-								onclick={() => {
+								onmouseup={() => {
 									playClickSound();
 									selectAnswer(String.fromCharCode(65 + i) as 'A' | 'B' | 'C');
 								}}
@@ -623,7 +623,7 @@
 				<div class="relative mb-auto flex -translate-y-[15rem] items-center justify-center">
 					{@render button({
 						label: 'Start over',
-						onclick: () => {
+						onmouseup: () => {
 							playClickSound();
 							gameState = GAME_STATES.START;
 						}
@@ -650,7 +650,7 @@
 				>
 					{@render button({
 						label: 'Start over',
-						onclick: () => {
+						onmouseup: () => {
 							playClickSound();
 							gameState = GAME_STATES.START;
 						}
@@ -659,7 +659,7 @@
 					<div class="mt-20">
 						{@render button({
 							label: 'Try again',
-							onclick: () => {
+							onmouseup: () => {
 								playClickSound();
 								gameState = GAME_STATES.SPIN;
 							}
@@ -677,11 +677,11 @@
 	</div>
 {/snippet}
 
-{#snippet button({ label, onclick }: { label: string; onclick: () => void })}
+{#snippet button({ label, onmouseup }: { label: string; onmouseup: () => void })}
 	<button
 		in:scale={{ duration: 500, start: 1.05, easing: bounceOut }}
 		out:scale={{ duration: 300, start: 1.05 }}
-		{onclick}
+		{onmouseup}
 		class="font-apertura-black bg-vivid-sky cursor-pointer rounded-[2.29rem] px-48 py-12 text-[6.11rem] leading-none text-[#23475F] transition-transform active:scale-90"
 	>
 		<span class="inline-block translate-y-1">{label}</span>
