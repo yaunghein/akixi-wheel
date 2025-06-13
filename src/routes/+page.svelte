@@ -65,7 +65,7 @@
 	};
 
 	const processStoredSubmissions = () => {
-		const storedSubmissions = localStorage.getItem('formSubmissions');
+		const storedSubmissions = localStorage.getItem('userResults');
 		if (storedSubmissions) {
 			try {
 				const submissions = JSON.parse(storedSubmissions);
@@ -73,37 +73,16 @@
 					console.log('Processing stored submission:', submission);
 				});
 				// Clear stored submissions after processing
-				localStorage.removeItem('formSubmissions');
+				localStorage.removeItem('userResults');
 			} catch (error) {
 				console.error('Error processing stored submissions:', error);
 			}
 		}
 	};
 
-	const storeFormSubmission = (formData: FormState) => {
-		const storedSubmissions = localStorage.getItem('formSubmissions');
-		let submissions: FormState[] = [];
-
-		if (storedSubmissions) {
-			try {
-				submissions = JSON.parse(storedSubmissions);
-			} catch (error) {
-				console.error('Error parsing stored submissions:', error);
-			}
-		}
-
-		submissions.push(formData);
-		localStorage.setItem('formSubmissions', JSON.stringify(submissions));
-	};
-
 	const handleFormSubmit = () => {
 		if (!validateForm()) {
 			return;
-		}
-		if (isOnline) {
-			console.log('Form submitted:', formState);
-		} else {
-			storeFormSubmission(formState);
 		}
 		gameState = GAME_STATES.SPIN;
 	};
@@ -327,6 +306,35 @@
 		if (clickSound) {
 			clickSound.currentTime = 0.5;
 			clickSound.play();
+		}
+	};
+
+	const handleUserResult = () => {
+		const data = {
+			first_name: formState.first_name,
+			last_name: formState.last_name,
+			email: formState.email,
+			segment: finalSegment?.text ?? null,
+			answer: selectedAnswer,
+			correct: isCorrect,
+			timestamp: new Date().toISOString()
+		};
+		if (isOnline) {
+			// For now, just log. Replace with API call if needed.
+			console.log('User result submitted:', data);
+		} else {
+			// Save to localStorage for later processing
+			const storedResults = localStorage.getItem('userResults');
+			let results = [];
+			if (storedResults) {
+				try {
+					results = JSON.parse(storedResults);
+				} catch (e) {
+					console.error('Error parsing userResults:', e);
+				}
+			}
+			results.push(data);
+			localStorage.setItem('userResults', JSON.stringify(results));
 		}
 	};
 </script>
@@ -625,6 +633,11 @@
 						label: 'Start over',
 						onmouseup: () => {
 							playClickSound();
+							handleUserResult();
+							formState = { first_name: '', last_name: '', email: '', stay_in_touch: false };
+							selectedAnswer = null;
+							isCorrect = null;
+							finalSegment = null;
 							gameState = GAME_STATES.START;
 						}
 					})}
