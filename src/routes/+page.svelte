@@ -32,15 +32,36 @@
 
 	onMount(() => {
 		clickSound = new Audio('/sounds/click.mp3');
-		clickSound.load();
 		tadaSound = new Audio('/sounds/tada.mp3');
-		tadaSound.load();
 		correctSound = new Audio('/sounds/correct.wav');
-		correctSound.load();
 		wrongSound1 = new Audio('/sounds/wrong1.wav');
-		wrongSound1.load();
 		wrongSound2 = new Audio('/sounds/wrong2.mp3');
-		wrongSound2.load();
+
+		// Wait for all sounds to load
+		Promise.all([
+			new Promise((resolve) => {
+				if (clickSound) clickSound.addEventListener('canplaythrough', resolve, { once: true });
+			}),
+			new Promise((resolve) => {
+				if (tadaSound) tadaSound.addEventListener('canplaythrough', resolve, { once: true });
+			}),
+			new Promise((resolve) => {
+				if (correctSound) correctSound.addEventListener('canplaythrough', resolve, { once: true });
+			}),
+			new Promise((resolve) => {
+				if (wrongSound1) wrongSound1.addEventListener('canplaythrough', resolve, { once: true });
+			}),
+			new Promise((resolve) => {
+				if (wrongSound2) wrongSound2.addEventListener('canplaythrough', resolve, { once: true });
+			})
+		]).then(() => {
+			// All sounds are loaded and ready to play
+			clickSound?.load();
+			tadaSound?.load();
+			correctSound?.load();
+			wrongSound1?.load();
+			wrongSound2?.load();
+		});
 
 		// Add online/offline event listeners
 		if (browser) {
