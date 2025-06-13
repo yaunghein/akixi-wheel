@@ -16,11 +16,11 @@
 	let showWheel = $derived(gameState === GAME_STATES.START || gameState === GAME_STATES.SPIN);
 	let isOnline = $state(browser ? navigator.onLine : true);
 
-	const CLICK_DELAY = 150; // Single place to control all click delays
-
 	let clickSound: HTMLAudioElement | null = $state(null);
 	let tadaSound: HTMLAudioElement | null = $state(null);
 	let correctSound: HTMLAudioElement | null = $state(null);
+	let wrongSound1: HTMLAudioElement | null = $state(null);
+	let wrongSound2: HTMLAudioElement | null = $state(null);
 
 	let rotation = $state(0);
 
@@ -31,6 +31,10 @@
 		tadaSound.load();
 		correctSound = new Audio('/sounds/correct.wav');
 		correctSound.load();
+		wrongSound1 = new Audio('/sounds/wrong1.wav');
+		wrongSound1.load();
+		wrongSound2 = new Audio('/sounds/wrong2.mp3');
+		wrongSound2.load();
 
 		// Add online/offline event listeners
 		if (browser) {
@@ -281,6 +285,11 @@
 				correctSound.play();
 			}
 		}
+		if (gameState === GAME_STATES.RESULT && !isCorrect) {
+			if (wrongSound1) {
+				wrongSound1.play();
+			}
+		}
 
 		if (gameState === GAME_STATES.FINAL && isCorrect) {
 			if (tadaSound) {
@@ -297,6 +306,13 @@
 				});
 			});
 		}
+
+		if (gameState === GAME_STATES.FINAL && !isCorrect) {
+			if (wrongSound2) {
+				wrongSound2.currentTime = 0.5;
+				wrongSound2.play();
+			}
+		}
 	});
 
 	$effect(() => {
@@ -310,7 +326,7 @@
 
 	const playClickSound = () => {
 		if (clickSound) {
-			clickSound.currentTime = 0; // Reset to start
+			clickSound.currentTime = 0.5; // Reset to start
 			clickSound.play();
 		}
 	};
@@ -331,11 +347,9 @@
 		{#if showWheel}
 			{#if gameState === GAME_STATES.SPIN}
 				<button
-					onmouseup={() => {
+					onclick={() => {
 						playClickSound();
-						setTimeout(() => {
-							gameState = GAME_STATES.FORM;
-						}, CLICK_DELAY);
+						gameState = GAME_STATES.FORM;
 					}}
 					class="absolute top-8 right-8 aspect-[1/0.96] w-[7rem] cursor-pointer transition-transform active:scale-90"
 				>
@@ -361,7 +375,6 @@
 								bind:gameState
 								bind:finalSegment
 								bind:rotation
-								{CLICK_DELAY}
 								{clickSound}
 							/>
 						</div>
@@ -375,11 +388,9 @@
 			</div>
 		{:else if gameState === GAME_STATES.FORM}
 			<button
-				onmouseup={() => {
+				onclick={() => {
 					playClickSound();
-					setTimeout(() => {
-						gameState = GAME_STATES.START;
-					}, CLICK_DELAY);
+					gameState = GAME_STATES.START;
 				}}
 				class="absolute top-8 right-8 aspect-[1/0.96] w-[7rem] cursor-pointer transition-transform active:scale-90"
 			>
@@ -463,11 +474,9 @@
 						{#if !keyboardVisible}
 							{@render button({
 								label: 'Play',
-								onmouseup: () => {
+								onclick: () => {
 									playClickSound();
-									setTimeout(() => {
-										handleFormSubmit();
-									}, CLICK_DELAY);
+									handleFormSubmit();
 								}
 							})}
 						{/if}
@@ -495,11 +504,9 @@
 				<div class="relative my-auto flex -translate-y-[15rem] items-center justify-center">
 					{@render button({
 						label: 'Continue',
-						onmouseup: () => {
+						onclick: () => {
 							playClickSound();
-							setTimeout(() => {
-								gameState = GAME_STATES.QUIZ;
-							}, CLICK_DELAY);
+							gameState = GAME_STATES.QUIZ;
 						}
 					})}
 				</div>
@@ -540,11 +547,9 @@
 							<button
 								class="shadow-box relative aspect-square w-[15.28rem] rounded-[2.29rem] transition-transform active:scale-90"
 								style="background: {i === 0 ? '#22f4ad' : i === 1 ? '#4450ff' : '#1cd2fa'}"
-								onmouseup={() => {
+								onclick={() => {
 									playClickSound();
-									setTimeout(() => {
-										selectAnswer(String.fromCharCode(65 + i) as 'A' | 'B' | 'C');
-									}, CLICK_DELAY);
+									selectAnswer(String.fromCharCode(65 + i) as 'A' | 'B' | 'C');
 								}}
 							>
 								<span
@@ -619,11 +624,9 @@
 				<div class="relative mb-auto flex -translate-y-[15rem] items-center justify-center">
 					{@render button({
 						label: 'Start over',
-						onmouseup: () => {
+						onclick: () => {
 							playClickSound();
-							setTimeout(() => {
-								gameState = GAME_STATES.START;
-							}, CLICK_DELAY);
+							gameState = GAME_STATES.START;
 						}
 					})}
 				</div>
@@ -648,22 +651,18 @@
 				>
 					{@render button({
 						label: 'Start over',
-						onmouseup: () => {
+						onclick: () => {
 							playClickSound();
-							setTimeout(() => {
-								gameState = GAME_STATES.START;
-							}, CLICK_DELAY);
+							gameState = GAME_STATES.START;
 						}
 					})}
 
 					<div class="mt-20">
 						{@render button({
 							label: 'Try again',
-							onmouseup: () => {
+							onclick: () => {
 								playClickSound();
-								setTimeout(() => {
-									gameState = GAME_STATES.SPIN;
-								}, CLICK_DELAY);
+								gameState = GAME_STATES.SPIN;
 							}
 						})}
 					</div>
@@ -679,11 +678,11 @@
 	</div>
 {/snippet}
 
-{#snippet button({ label, onmouseup }: { label: string; onmouseup: () => void })}
+{#snippet button({ label, onclick }: { label: string; onclick: () => void })}
 	<button
 		in:scale={{ duration: 500, start: 1.05, easing: bounceOut }}
 		out:scale={{ duration: 300, start: 1.05 }}
-		{onmouseup}
+		{onclick}
 		class="font-apertura-black bg-vivid-sky cursor-pointer rounded-[2.29rem] px-48 py-12 text-[6.11rem] leading-none text-[#23475F] transition-transform active:scale-90"
 	>
 		<span class="inline-block translate-y-1">{label}</span>
