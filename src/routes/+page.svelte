@@ -10,6 +10,12 @@
 	import { scale } from 'svelte/transition';
 	import { bounceOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
+	import toast from 'svelte-french-toast';
+
+	const TOAST_CONFIG = {
+		position: 'bottom-center',
+		duration: 3000
+	} as const;
 
 	let segmentColor = $state('#FF6B6B');
 	let gameState = $state(GAME_STATES.START) as TGameState;
@@ -57,11 +63,13 @@
 
 	const handleOnline = () => {
 		isOnline = true;
+		toast.success('Back online!', TOAST_CONFIG);
 		processStoredSubmissions();
 	};
 
 	const handleOffline = () => {
 		isOnline = false;
+		toast.error('Offline! Data will be saved locally.', TOAST_CONFIG);
 	};
 
 	const processStoredSubmissions = () => {
@@ -74,8 +82,10 @@
 				});
 				// Clear stored submissions after processing
 				localStorage.removeItem('userResults');
+				toast.success('Successfully synced offline data!', TOAST_CONFIG);
 			} catch (error) {
 				console.error('Error processing stored submissions:', error);
+				toast.error('Failed to process offline data', TOAST_CONFIG);
 			}
 		}
 	};
@@ -147,18 +157,17 @@
 
 	const validateForm = () => {
 		if (!formState.first_name.trim()) {
-			errorMessage = 'First name is required';
+			toast.error('First name is required', TOAST_CONFIG);
 			return false;
 		}
 		if (!formState.last_name.trim()) {
-			errorMessage = 'Last name is required';
+			toast.error('Last name is required', TOAST_CONFIG);
 			return false;
 		}
 		if (formState.email.trim() && !validateEmail(formState.email)) {
-			errorMessage = 'Please enter a valid email address';
+			toast.error('Please enter a valid email address', TOAST_CONFIG);
 			return false;
 		}
-		errorMessage = null;
 		return true;
 	};
 
@@ -322,6 +331,7 @@
 		if (isOnline) {
 			// For now, just log. Replace with API call if needed.
 			console.log('User result submitted:', data);
+			toast.success('Result saved successfully!', TOAST_CONFIG);
 		} else {
 			// Save to localStorage for later processing
 			const storedResults = localStorage.getItem('userResults');
@@ -331,10 +341,13 @@
 					results = JSON.parse(storedResults);
 				} catch (e) {
 					console.error('Error parsing userResults:', e);
+					toast.error('Failed to save result offline', TOAST_CONFIG);
+					return;
 				}
 			}
 			results.push(data);
 			localStorage.setItem('userResults', JSON.stringify(results));
+			toast.success('Result saved offline.', TOAST_CONFIG);
 		}
 	};
 </script>

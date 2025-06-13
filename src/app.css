@@ -18,6 +18,18 @@ body {
 	@apply !text-[5px];
 }
 
+.toaster .message {
+	@apply !translate-y-[0.4rem] !text-[3.36rem];
+}
+
+.toaster .base * {
+	@apply shrink-0 !text-[3.36rem] !text-white;
+}
+
+.toaster .base {
+	@apply !bg-electric-indigo !shadow-box;
+}
+
 @font-face {
 	font-family: 'AperturaRegular';
 	src: url('/fonts/apertura-regular.otf') format('opentype');
