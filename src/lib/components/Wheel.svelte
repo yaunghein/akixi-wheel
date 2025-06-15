@@ -8,7 +8,8 @@
 		finalSegment = $bindable(),
 		CLICK_DELAY = $bindable(200),
 		clickSound,
-		rotation = $bindable(0)
+		rotation = $bindable(0),
+		lastPosition = $bindable(0)
 	} = $props();
 
 	const playClickSound = () => {
@@ -128,6 +129,10 @@
 		canvas.width = rect.width * dpr;
 		canvas.height = rect.height * dpr;
 		ctx.scale(dpr, dpr);
+
+		// Set initial rotation based on last position
+		const segmentAngle = (2 * Math.PI) / wheelData.length;
+		rotation = lastPosition * segmentAngle;
 
 		// Load the font
 		const font = new FontFace('AperturaBlack', 'url(/fonts/apertura-black.otf)');
@@ -249,13 +254,12 @@
 				spinSpeed = 0;
 				// Normalize rotation to 0 to 2π
 				const normalizedRotation = ((rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-
 				// Adjust for the top (pointer) being at -90 degrees (i.e., 3π/2 radians)
 				const adjustedAngle = (2 * Math.PI + Math.PI * 1.5 - normalizedRotation) % (2 * Math.PI);
-
-				// Determine which segment is at the pointer
 				const winningIndex = Math.floor(adjustedAngle / segmentAngle) % wheelData.length;
 
+				// Store the normalized rotation
+				lastPosition = normalizedRotation;
 				console.log('Wheel landed on:', wheelData[winningIndex]);
 				finalSegment = wheelData[winningIndex];
 				setTimeout(() => {
@@ -279,6 +283,9 @@
 
 			if (!isSpinning) {
 				isSpinning = true;
+				// Use the stored normalized rotation
+				rotation = lastPosition;
+
 				// Slower initial speed with smaller random variation
 				spinSpeed = 0.02 + Math.random() * 0.03 + Math.random() * 0.02;
 				// Add random rotation to ensure different final positions

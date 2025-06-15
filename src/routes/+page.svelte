@@ -18,7 +18,7 @@
 	} as const;
 
 	let segmentColor = $state('#FF6B6B');
-	let gameState = $state(GAME_STATES.START) as TGameState;
+	let gameState = $state(GAME_STATES.SPIN) as TGameState;
 	let showWheel = $derived(gameState === GAME_STATES.START || gameState === GAME_STATES.SPIN);
 	let isOnline = $state(browser ? navigator.onLine : true);
 
@@ -29,6 +29,7 @@
 	let wrongSound2: HTMLAudioElement | null = $state(null);
 
 	let rotation = $state(0);
+	let lastPosition = $state(0);
 
 	onMount(() => {
 		clickSound = new Audio('/sounds/click.mp3');
@@ -416,6 +417,7 @@
 								bind:gameState
 								bind:finalSegment
 								bind:rotation
+								bind:lastPosition
 								{clickSound}
 							/>
 						</div>
@@ -537,6 +539,15 @@
 				{/if}
 			</div>
 		{:else if gameState === GAME_STATES.LANDED}
+			<button
+				onmouseup={() => {
+					playClickSound();
+					gameState = GAME_STATES.SPIN;
+				}}
+				class="absolute top-8 right-8 aspect-[1/0.96] w-[7rem] cursor-pointer transition-transform active:scale-90"
+			>
+				<BackButton />
+			</button>
 			{#if finalSegment}
 				<div class="relative my-auto text-center text-[7.33rem] leading-none">
 					<div class="font-apertura-black mb-2">You landed on</div>
