@@ -251,15 +251,15 @@
 			segmentColor = wheelData[currentIndex].color;
 
 			// decrease volume sync with spinSpeed, spinSpeed is low, volume is low
-			if (spinningSound) {
-				// Scale spinSpeed to a 0-1 range for volume
-				const maxSpeed = 0.07; // Maximum speed we expect
-				let volume = Math.min(Math.max(spinSpeed / maxSpeed, 0), 1);
-				if (volume < 0.1) {
-					volume = 0.1;
-				}
-				spinningSound.volume = volume;
-			}
+			// if (spinningSound) {
+			// 	// Scale spinSpeed to a 0-1 range for volume
+			// 	const maxSpeed = 0.07; // Maximum speed we expect
+			// 	let volume = Math.min(Math.max(spinSpeed / maxSpeed, 0), 1);
+			// 	if (volume < 0.1) {
+			// 		volume = 0.1;
+			// 	}
+			// 	spinningSound.volume = volume;
+			// }
 
 			if (spinSpeed < 0.0001) {
 				isSpinning = false;

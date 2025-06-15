@@ -472,20 +472,40 @@
 			toast.success('Result saved offline.', TOAST_CONFIG);
 		}
 	};
+
+	const video = (element: HTMLVideoElement) => {
+		element.muted = true;
+		element.loop = true;
+		element.playsInline = true;
+
+		const play = () => {
+			element.play().catch((error) => {
+				console.error('Error playing video:', error);
+			});
+		};
+		document.addEventListener('click', play, { once: true });
+
+		return {
+			destroy() {
+				document.removeEventListener('click', play);
+			}
+		};
+	};
 </script>
 
 <main
 	class="bg-electric-indigo flex min-h-screen overflow-hidden text-white transition-colors duration-500"
 >
 	<div class="relative flex aspect-[4/7] w-full flex-col pt-28">
-		<img
+		<!-- <img
 			src="/images/background.webp"
 			alt="Background"
 			class="absolute inset-0 h-full w-full object-cover"
-		/>
-		<!-- <video loop muted playsinline controls class="absolute inset-0 h-full w-full object-cover">
-			<source src="/videos/background.mp4" type="video/mp4" />
-		</video> -->
+		/> -->
+		<video use:video muted loop playsinline class="absolute inset-0 h-full w-full object-cover">
+			<source src="/videos/sample.mp4" type="video/mp4" />
+			<!-- <source src="/videos/background.webm" type="video/webm" /> -->
+		</video>
 		<div class="relative mx-auto mb-auto aspect-[1/0.27] w-[40.5rem]">
 			<Logo />
 		</div>
