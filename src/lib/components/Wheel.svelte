@@ -8,13 +8,14 @@
 		finalSegment = $bindable(),
 		CLICK_DELAY = $bindable(200),
 		clickSound,
+		spinningSound,
 		rotation = $bindable(0),
 		lastPosition = $bindable(0)
 	} = $props();
 
 	const playClickSound = () => {
 		if (clickSound) {
-			clickSound.currentTime = 0.5;
+			// clickSound.currentTime = 0.5;
 			clickSound.play();
 		}
 	};
@@ -249,8 +250,20 @@
 			const currentIndex = Math.floor(adjustedAngle / segmentAngle) % wheelData.length;
 			segmentColor = wheelData[currentIndex].color;
 
+			// decrease volume sync with spinSpeed, spinSpeed is low, volume is low
+			if (spinningSound) {
+				// Scale spinSpeed to a 0-1 range for volume
+				const maxSpeed = 0.07; // Maximum speed we expect
+				let volume = Math.min(Math.max(spinSpeed / maxSpeed, 0), 1);
+				if (volume < 0.1) {
+					volume = 0.1;
+				}
+				spinningSound.volume = volume;
+			}
+
 			if (spinSpeed < 0.0001) {
 				isSpinning = false;
+				spinningSound.pause();
 				spinSpeed = 0;
 				// Normalize rotation to 0 to 2π
 				const normalizedRotation = ((rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
@@ -275,25 +288,30 @@
 	function spinWheel() {
 		playClickSound();
 
-		setTimeout(() => {
-			if (gameState === GAME_STATES.START) {
-				gameState = GAME_STATES.FORM;
-				return;
-			}
+		if (gameState === GAME_STATES.START) {
+			gameState = GAME_STATES.FORM;
+			return;
+		}
 
-			if (!isSpinning) {
-				isSpinning = true;
-				// Use the stored normalized rotation
-				rotation = lastPosition;
+		if (!isSpinning) {
+			isSpinning = true;
+			spinningSound.loop = true;
+			spinningSound.play();
+			// spinningSound.addEventListener('timeupdate', () => {
+			// 	if (spinningSound.currentTime > 1.5) {
+			// 		spinningSound.currentTime = 0;
+			// 	}
+			// });
+			// Use the stored normalized rotation
+			rotation = lastPosition;
 
-				// Slower initial speed with smaller random variation
-				spinSpeed = 0.02 + Math.random() * 0.03 + Math.random() * 0.02;
-				// Add random rotation to ensure different final positions
-				rotation += Math.random() * Math.PI * 2;
-				lastTimestamp = 0;
-				requestAnimationFrame(animate);
-			}
-		}, CLICK_DELAY);
+			// Slower initial speed with smaller random variation
+			spinSpeed = 0.02 + Math.random() * 0.03 + Math.random() * 0.02;
+			// Add random rotation to ensure different final positions
+			rotation += Math.random() * Math.PI * 2;
+			lastTimestamp = 0;
+			requestAnimationFrame(animate);
+		}
 	}
 </script>
 

@@ -18,7 +18,7 @@
 	} as const;
 
 	let segmentColor = $state('#FF6B6B');
-	let gameState = $state(GAME_STATES.SPIN) as TGameState;
+	let gameState = $state(GAME_STATES.START) as TGameState;
 	let showWheel = $derived(gameState === GAME_STATES.START || gameState === GAME_STATES.SPIN);
 	let isOnline = $state(browser ? navigator.onLine : true);
 
@@ -27,17 +27,32 @@
 	let correctSound: HTMLAudioElement | null = $state(null);
 	let wrongSound1: HTMLAudioElement | null = $state(null);
 	let wrongSound2: HTMLAudioElement | null = $state(null);
+	let backgroundSound: HTMLAudioElement | null = $state(null);
+	let congratulationsSound: HTMLAudioElement | null = $state(null);
+	let hardLuckSound: HTMLAudioElement | null = $state(null);
+	let landedSound: HTMLAudioElement | null = $state(null);
+	let questionSound: HTMLAudioElement | null = $state(null);
+	let rightAnswerSound: HTMLAudioElement | null = $state(null);
+	let wrongAnswerSound: HTMLAudioElement | null = $state(null);
+	let spinningSound: HTMLAudioElement | null = $state(null);
 
 	let rotation = $state(0);
 	let lastPosition = $state(0);
 
 	onMount(() => {
-		clickSound = new Audio('/sounds/click.mp3');
+		clickSound = new Audio('/sounds/click2.mp3');
 		tadaSound = new Audio('/sounds/tada.mp3');
 		correctSound = new Audio('/sounds/correct.wav');
 		wrongSound1 = new Audio('/sounds/wrong1.wav');
 		wrongSound2 = new Audio('/sounds/wrong2.mp3');
-
+		backgroundSound = new Audio('/sounds/background.mp3');
+		congratulationsSound = new Audio('/sounds/congratulations.mp3');
+		hardLuckSound = new Audio('/sounds/hard-luck.mp3');
+		landedSound = new Audio('/sounds/landed.mp3');
+		questionSound = new Audio('/sounds/question.mp3');
+		rightAnswerSound = new Audio('/sounds/right-answer.wav');
+		spinningSound = new Audio('/sounds/spinning.mp3');
+		wrongAnswerSound = new Audio('/sounds/wrong-answer.mp3');
 		// Wait for all sounds to load
 		Promise.all([
 			new Promise((resolve) => {
@@ -54,6 +69,37 @@
 			}),
 			new Promise((resolve) => {
 				if (wrongSound2) wrongSound2.addEventListener('canplaythrough', resolve, { once: true });
+			}),
+			new Promise((resolve) => {
+				if (backgroundSound)
+					backgroundSound.addEventListener('canplaythrough', resolve, { once: true });
+			}),
+			new Promise((resolve) => {
+				if (congratulationsSound)
+					congratulationsSound.addEventListener('canplaythrough', resolve, { once: true });
+			}),
+			new Promise((resolve) => {
+				if (hardLuckSound)
+					hardLuckSound.addEventListener('canplaythrough', resolve, { once: true });
+			}),
+			new Promise((resolve) => {
+				if (landedSound) landedSound.addEventListener('canplaythrough', resolve, { once: true });
+			}),
+			new Promise((resolve) => {
+				if (questionSound)
+					questionSound.addEventListener('canplaythrough', resolve, { once: true });
+			}),
+			new Promise((resolve) => {
+				if (rightAnswerSound)
+					rightAnswerSound.addEventListener('canplaythrough', resolve, { once: true });
+			}),
+			new Promise((resolve) => {
+				if (spinningSound)
+					spinningSound.addEventListener('canplaythrough', resolve, { once: true });
+			}),
+			new Promise((resolve) => {
+				if (wrongAnswerSound)
+					wrongAnswerSound.addEventListener('canplaythrough', resolve, { once: true });
 			})
 		]).then(() => {
 			// All sounds are loaded and ready to play
@@ -62,6 +108,14 @@
 			correctSound?.load();
 			wrongSound1?.load();
 			wrongSound2?.load();
+			backgroundSound?.load();
+			congratulationsSound?.load();
+			hardLuckSound?.load();
+			landedSound?.load();
+			questionSound?.load();
+			rightAnswerSound?.load();
+			spinningSound?.load();
+			wrongAnswerSound?.load();
 		});
 
 		// Add online/offline event listeners
@@ -74,6 +128,21 @@
 				processStoredSubmissions();
 			}
 		}
+
+		const playBackground = () => {
+			// const video = document.querySelector('video');
+			// if (video) {
+			// 	video.play().catch((error) => {
+			// 		console.error('Error playing video:', error);
+			// 	});
+			// }
+			if (backgroundSound && gameState === GAME_STATES.START) {
+				backgroundSound.loop = true;
+				backgroundSound.play();
+			}
+		};
+
+		document.addEventListener('click', playBackground, { once: true });
 
 		return () => {
 			if (browser) {
@@ -289,14 +358,46 @@
 	}
 
 	$effect(() => {
+		if (gameState === GAME_STATES.START) {
+			if (backgroundSound) {
+				backgroundSound.play();
+			}
+		}
+		if (gameState === GAME_STATES.FORM) {
+			if (backgroundSound) {
+				backgroundSound.pause();
+			}
+		}
+		if (gameState !== GAME_STATES.START) {
+			if (spinningSound) {
+				spinningSound.pause();
+			}
+		}
+		if (gameState === GAME_STATES.LANDED) {
+			if (landedSound) {
+				landedSound.play();
+			}
+		}
+		if (gameState === GAME_STATES.QUIZ) {
+			if (questionSound) {
+				questionSound.loop = true;
+				questionSound.play();
+			}
+		}
+		if (gameState !== GAME_STATES.QUIZ) {
+			if (questionSound) {
+				questionSound.pause();
+			}
+		}
+
 		if (gameState === GAME_STATES.RESULT && isCorrect) {
 			if (correctSound) {
 				correctSound.play();
 			}
 		}
 		if (gameState === GAME_STATES.RESULT && !isCorrect) {
-			if (wrongSound1) {
-				wrongSound1.play();
+			if (wrongAnswerSound) {
+				wrongAnswerSound.play();
 			}
 		}
 
@@ -317,9 +418,8 @@
 		}
 
 		if (gameState === GAME_STATES.FINAL && !isCorrect) {
-			if (wrongSound2) {
-				wrongSound2.currentTime = 0.5;
-				wrongSound2.play();
+			if (hardLuckSound) {
+				hardLuckSound.play();
 			}
 		}
 	});
@@ -335,7 +435,7 @@
 
 	const playClickSound = () => {
 		if (clickSound) {
-			clickSound.currentTime = 0.5;
+			// clickSound.currentTime = 0.5;
 			clickSound.play();
 		}
 	};
@@ -383,6 +483,9 @@
 			alt="Background"
 			class="absolute inset-0 h-full w-full object-cover"
 		/>
+		<!-- <video loop muted playsinline controls class="absolute inset-0 h-full w-full object-cover">
+			<source src="/videos/background.mp4" type="video/mp4" />
+		</video> -->
 		<div class="relative mx-auto mb-auto aspect-[1/0.27] w-[40.5rem]">
 			<Logo />
 		</div>
@@ -419,6 +522,7 @@
 								bind:rotation
 								bind:lastPosition
 								{clickSound}
+								{spinningSound}
 							/>
 						</div>
 						<div
