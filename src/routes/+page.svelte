@@ -17,6 +17,8 @@
 		duration: 3000
 	} as const;
 
+	const BACKGROUND_FADE_DURATION = 2000;
+
 	let segmentColor = $state('#FF6B6B');
 	let gameState = $state(GAME_STATES.START) as TGameState;
 	let showWheel = $derived(gameState === GAME_STATES.START || gameState === GAME_STATES.SPIN);
@@ -130,17 +132,57 @@
 			}
 		}
 
+		const fadeVolume = (audio: HTMLAudioElement, from: number, to: number, duration: number) => {
+			const steps = 30;
+			const stepTime = duration / steps;
+			let currentStep = 0;
+			const volumeStep = (to - from) / steps;
+			audio.volume = from;
+			const interval = setInterval(() => {
+				currentStep++;
+				audio.volume = Math.max(0, Math.min(1, audio.volume + volumeStep));
+				if (currentStep >= steps) {
+					audio.volume = to;
+					clearInterval(interval);
+				}
+			}, stepTime);
+		};
+
 		const playBackground = () => {
-			// const video = document.querySelector('video');
-			// if (video) {
-			// 	video.play().catch((error) => {
-			// 		console.error('Error playing video:', error);
-			// 	});
-			// }
 			if (backgroundSound) {
-				backgroundSound.loop = true;
-				backgroundSound.volume = 0.075;
+				backgroundSound.loop = false; // We'll handle looping manually
+				backgroundSound.volume = 0;
+				backgroundSound.currentTime = 0;
 				backgroundSound.play();
+
+				// Fade in
+				fadeVolume(backgroundSound, 0, 0.075, BACKGROUND_FADE_DURATION);
+
+				const fadeOutDuration = BACKGROUND_FADE_DURATION;
+				const onTimeUpdate = () => {
+					if (
+						backgroundSound &&
+						backgroundSound.duration &&
+						backgroundSound.currentTime > backgroundSound.duration - fadeOutDuration / 1000
+					) {
+						// Fade out only once per loop
+						backgroundSound.removeEventListener('timeupdate', onTimeUpdate);
+						fadeVolume(backgroundSound, backgroundSound.volume, 0, BACKGROUND_FADE_DURATION);
+					}
+				};
+
+				backgroundSound.addEventListener('timeupdate', onTimeUpdate);
+
+				backgroundSound.onended = () => {
+					if (backgroundSound) {
+						// Reset and loop
+						backgroundSound.currentTime = 0;
+						backgroundSound.volume = 0;
+						backgroundSound.play();
+						fadeVolume(backgroundSound, 0, 0.075, BACKGROUND_FADE_DURATION);
+						backgroundSound.addEventListener('timeupdate', onTimeUpdate);
+					}
+				};
 			}
 		};
 
