@@ -116,7 +116,7 @@
 	let ctx: CanvasRenderingContext2D;
 	let isSpinning = $state(false);
 	let spinSpeed = $state(0);
-	let spinDeceleration = $state(0.995);
+	let spinDeceleration = $state(0.994);
 	let lastTimestamp = $state(0);
 	let fontLoaded = $state(false);
 
@@ -296,6 +296,7 @@
 		if (!isSpinning) {
 			isSpinning = true;
 			spinningSound.loop = true;
+			spinningSound.volume = 0.2;
 			spinningSound.play();
 			// spinningSound.addEventListener('timeupdate', () => {
 			// 	if (spinningSound.currentTime > 1.5) {

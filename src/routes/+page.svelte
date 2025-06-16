@@ -41,7 +41,8 @@
 
 	onMount(() => {
 		clickSound = new Audio('/sounds/click2.mp3');
-		tadaSound = new Audio('/sounds/tada.mp3');
+		tadaSound = new Audio('/sounds/congratulations.mp3');
+		// tadaSound = new Audio('/sounds/tada.mp3');
 		correctSound = new Audio('/sounds/correct.wav');
 		wrongSound1 = new Audio('/sounds/wrong1.wav');
 		wrongSound2 = new Audio('/sounds/wrong2.mp3');
@@ -51,7 +52,7 @@
 		landedSound = new Audio('/sounds/landed.mp3');
 		questionSound = new Audio('/sounds/question.mp3');
 		rightAnswerSound = new Audio('/sounds/right-answer.wav');
-		spinningSound = new Audio('/sounds/spinning.mp3');
+		spinningSound = new Audio('/sounds/spinning2.mp3');
 		wrongAnswerSound = new Audio('/sounds/wrong-answer.mp3');
 		// Wait for all sounds to load
 		Promise.all([
@@ -136,8 +137,9 @@
 			// 		console.error('Error playing video:', error);
 			// 	});
 			// }
-			if (backgroundSound && gameState === GAME_STATES.START) {
+			if (backgroundSound) {
 				backgroundSound.loop = true;
+				backgroundSound.volume = 0.075;
 				backgroundSound.play();
 			}
 		};
@@ -201,18 +203,18 @@
 		question: QuizQuestion;
 	};
 
-	let finalSegment: WheelSegment | null = $state({
-		text: 'Call Tagging & Categorisation',
-		color: '#1cd2fa',
-		question: {
-			text: 'Which feature helps you recover missed sales opportunities?',
-			choices: ['Missed Call Recovery', 'Call Recording', 'Voicemail'],
-			correct: 'A',
-			explanation:
-				'Missed Call Recovery helps you recover missed sales opportunities by tracking and alerting you to missed calls.'
-		}
-	});
-	// let finalSegment: WheelSegment | null = $state(null);
+	// let finalSegment: WheelSegment | null = $state({
+	// 	text: 'Call Tagging & Categorisation',
+	// 	color: '#1cd2fa',
+	// 	question: {
+	// 		text: 'Which feature helps you recover missed sales opportunities?',
+	// 		choices: ['Missed Call Recovery', 'Call Recording', 'Voicemail'],
+	// 		correct: 'A',
+	// 		explanation:
+	// 			'Missed Call Recovery helps you recover missed sales opportunities by tracking and alerting you to missed calls.'
+	// 	}
+	// });
+	let finalSegment: WheelSegment | null = $state(null);
 
 	type FormState = {
 		first_name: string;
@@ -358,16 +360,16 @@
 	}
 
 	$effect(() => {
-		if (gameState === GAME_STATES.START) {
-			if (backgroundSound) {
-				backgroundSound.play();
-			}
-		}
-		if (gameState === GAME_STATES.FORM) {
-			if (backgroundSound) {
-				backgroundSound.pause();
-			}
-		}
+		// if (gameState === GAME_STATES.START) {
+		// 	if (backgroundSound) {
+		// 		backgroundSound.play();
+		// 	}
+		// }
+		// if (gameState === GAME_STATES.FORM) {
+		// 	if (backgroundSound) {
+		// 		backgroundSound.pause();
+		// 	}
+		// }
 		if (gameState !== GAME_STATES.START) {
 			if (spinningSound) {
 				spinningSound.pause();
@@ -641,7 +643,7 @@
 						{#if !keyboardVisible}
 							{@render button({
 								label: 'Play',
-								onmouseup: () => {
+								onclick: () => {
 									playClickSound();
 									handleFormSubmit();
 								}
@@ -680,7 +682,7 @@
 				<div class="relative my-auto flex -translate-y-[15rem] items-center justify-center">
 					{@render button({
 						label: 'Continue',
-						onmouseup: () => {
+						onclick: () => {
 							playClickSound();
 							gameState = GAME_STATES.QUIZ;
 						}
@@ -800,7 +802,7 @@
 				<div class="relative mb-auto flex -translate-y-[15rem] items-center justify-center">
 					{@render button({
 						label: 'Start over',
-						onmouseup: () => {
+						onclick: () => {
 							playClickSound();
 							handleUserResult();
 							formState = { first_name: '', last_name: '', email: '', stay_in_touch: false };
@@ -832,7 +834,7 @@
 				>
 					{@render button({
 						label: 'Start over',
-						onmouseup: () => {
+						onclick: () => {
 							playClickSound();
 							gameState = GAME_STATES.START;
 						}
@@ -841,7 +843,7 @@
 					<div class="mt-20">
 						{@render button({
 							label: 'Try again',
-							onmouseup: () => {
+							onclick: () => {
 								playClickSound();
 								gameState = GAME_STATES.SPIN;
 							}
@@ -859,11 +861,11 @@
 	</div>
 {/snippet}
 
-{#snippet button({ label, onmouseup }: { label: string; onmouseup: () => void })}
+{#snippet button({ label, onclick }: { label: string; onclick: () => void })}
 	<button
 		in:scale={{ duration: 500, start: 1.05, easing: bounceOut }}
 		out:scale={{ duration: 300, start: 1.05 }}
-		{onmouseup}
+		{onclick}
 		class="font-apertura-black bg-vivid-sky cursor-pointer rounded-[2.29rem] px-48 py-12 text-[6.11rem] leading-none text-[#23475F] transition-transform active:scale-90"
 	>
 		<span class="inline-block translate-y-1">{label}</span>
