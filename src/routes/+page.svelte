@@ -201,18 +201,18 @@
 		question: QuizQuestion;
 	};
 
-	// let finalSegment: WheelSegment | null = $state({
-	// 	text: 'Call Tagging & Categorisation',
-	// 	color: '#1cd2fa',
-	// 	question: {
-	// 		text: 'Which feature helps you recover missed sales opportunities?',
-	// 		choices: ['Missed Call Recovery', 'Call Recording', 'Voicemail'],
-	// 		correct: 'A',
-	// 		explanation:
-	// 			'Missed Call Recovery helps you recover missed sales opportunities by tracking and alerting you to missed calls.'
-	// 	}
-	// });
-	let finalSegment: WheelSegment | null = $state(null);
+	let finalSegment: WheelSegment | null = $state({
+		text: 'Call Tagging & Categorisation',
+		color: '#1cd2fa',
+		question: {
+			text: 'Which feature helps you recover missed sales opportunities?',
+			choices: ['Missed Call Recovery', 'Call Recording', 'Voicemail'],
+			correct: 'A',
+			explanation:
+				'Missed Call Recovery helps you recover missed sales opportunities by tracking and alerting you to missed calls.'
+		}
+	});
+	// let finalSegment: WheelSegment | null = $state(null);
 
 	type FormState = {
 		first_name: string;
@@ -496,14 +496,14 @@
 <main
 	class="bg-electric-indigo flex min-h-screen overflow-hidden text-white transition-colors duration-500"
 >
-	<div class="relative flex aspect-[4/7] w-full flex-col pt-28">
+	<div class="relative flex aspect-[4/7] w-full flex-col overflow-hidden pt-[19rem]">
 		<!-- <img
 			src="/images/background.webp"
 			alt="Background"
 			class="absolute inset-0 h-full w-full object-cover"
 		/> -->
 		<video use:video muted loop playsinline class="absolute inset-0 h-full w-full object-cover">
-			<source src="/videos/sample.mp4" type="video/mp4" />
+			<source src="/videos/background-2k.mp4" type="video/mp4" />
 			<!-- <source src="/videos/background.webm" type="video/webm" /> -->
 		</video>
 		<div class="relative mx-auto mb-auto aspect-[1/0.27] w-[40.5rem]">
