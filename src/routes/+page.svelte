@@ -37,6 +37,7 @@
 	let rightAnswerSound: HTMLAudioElement | null = $state(null);
 	let wrongAnswerSound: HTMLAudioElement | null = $state(null);
 	let spinningSound: HTMLAudioElement | null = $state(null);
+	let typeSound: HTMLAudioElement | null = $state(null);
 
 	let rotation = $state(0);
 	let lastPosition = $state(0);
@@ -56,6 +57,8 @@
 		rightAnswerSound = new Audio('/sounds/right-answer.wav');
 		spinningSound = new Audio('/sounds/spinning2.mp3');
 		wrongAnswerSound = new Audio('/sounds/wrong-answer.mp3');
+		typeSound = new Audio('/sounds/ios-type.mp3');
+
 		// Wait for all sounds to load
 		Promise.all([
 			new Promise((resolve) => {
@@ -119,6 +122,7 @@
 			rightAnswerSound?.load();
 			spinningSound?.load();
 			wrongAnswerSound?.load();
+			typeSound?.load();
 		});
 
 		// Add online/offline event listeners
@@ -186,7 +190,7 @@
 			}
 		};
 
-		document.addEventListener('click', playBackground, { once: true });
+		// document.addEventListener('click', playBackground, { once: true });
 
 		return () => {
 			if (browser) {
@@ -306,7 +310,16 @@
 		return true;
 	};
 
+	const playTypeSound = () => {
+		if (typeSound) {
+			typeSound.currentTime = 0;
+			typeSound.play();
+		}
+	};
+
 	const onKeydown = (event: { detail: string }) => {
+		playTypeSound();
+
 		errorMessage = null;
 		const key = event.detail;
 
