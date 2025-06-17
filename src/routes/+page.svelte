@@ -20,7 +20,7 @@
 	const BACKGROUND_FADE_DURATION = 2000;
 
 	let segmentColor = $state('#FF6B6B');
-	let gameState = $state(GAME_STATES.SPIN) as TGameState;
+	let gameState = $state(GAME_STATES.START) as TGameState;
 	let showWheel = $derived(gameState === GAME_STATES.START || gameState === GAME_STATES.SPIN);
 	let isOnline = $state(browser ? navigator.onLine : true);
 
