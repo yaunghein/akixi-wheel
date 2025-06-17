@@ -9,6 +9,7 @@
 		CLICK_DELAY = $bindable(200),
 		clickSound,
 		spinningSound,
+		spinVolume,
 		rotation = $bindable(0),
 		lastPosition = $bindable(0)
 	} = $props();
@@ -296,7 +297,7 @@
 		if (!isSpinning) {
 			isSpinning = true;
 			spinningSound.loop = true;
-			spinningSound.volume = 0.2;
+			spinningSound.volume = spinVolume;
 			spinningSound.currentTime = 0;
 			spinningSound.play();
 			// spinningSound.addEventListener('timeupdate', () => {

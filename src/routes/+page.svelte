@@ -7,7 +7,7 @@
 	import Indicator from '$lib/components/Indicator.svelte';
 	import BackButton from '$lib/components/BackButton.svelte';
 	import { onMount } from 'svelte';
-	import { scale } from 'svelte/transition';
+	import { fade, scale } from 'svelte/transition';
 	import { bounceOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
 	import toast from 'svelte-french-toast';
@@ -23,6 +23,12 @@
 	let gameState = $state(GAME_STATES.START) as TGameState;
 	let showWheel = $derived(gameState === GAME_STATES.START || gameState === GAME_STATES.SPIN);
 	let isOnline = $state(browser ? navigator.onLine : true);
+
+	// Volume control state
+	let showVolumePopup = $state(false);
+	let spinVolume = $state(0.2);
+	let otherVolume = $state(0.5);
+	let backgroundVolume = $state(0.075);
 
 	let clickSound: HTMLAudioElement | null = $state(null);
 	let tadaSound: HTMLAudioElement | null = $state(null);
@@ -58,6 +64,40 @@
 		spinningSound = new Audio('/sounds/spinning2.mp3');
 		wrongAnswerSound = new Audio('/sounds/wrong-answer.mp3');
 		typeSound = new Audio('/sounds/ios-type.mp3');
+
+		// Set initial volumes
+		if (spinningSound) spinningSound.volume = spinVolume;
+		[
+			clickSound,
+			tadaSound,
+			correctSound,
+			wrongSound1,
+			wrongSound2,
+			backgroundSound,
+			congratulationsSound,
+			hardLuckSound,
+			landedSound,
+			questionSound,
+			rightAnswerSound,
+			wrongAnswerSound,
+			typeSound
+		].forEach((sound) => {
+			if (sound) sound.volume = otherVolume;
+		});
+
+		// Add keyboard event listener for volume popup
+		if (browser) {
+			window.addEventListener('keydown', (e) => {
+				if (e.shiftKey && e.key.toLowerCase() === 's') {
+					showVolumePopup = !showVolumePopup;
+					if (clickSound) {
+						clickSound.currentTime = 0;
+						clickSound.volume = otherVolume;
+						clickSound.play();
+					}
+				}
+			});
+		}
 
 		// Wait for all sounds to load
 		Promise.all([
@@ -160,7 +200,7 @@
 				backgroundSound.play();
 
 				// Fade in
-				fadeVolume(backgroundSound, 0, 0.075, BACKGROUND_FADE_DURATION);
+				fadeVolume(backgroundSound, 0, backgroundVolume, BACKGROUND_FADE_DURATION);
 
 				const fadeOutDuration = BACKGROUND_FADE_DURATION;
 				const onTimeUpdate = () => {
@@ -183,14 +223,14 @@
 						backgroundSound.currentTime = 0;
 						backgroundSound.volume = 0;
 						backgroundSound.play();
-						fadeVolume(backgroundSound, 0, 0.075, BACKGROUND_FADE_DURATION);
+						fadeVolume(backgroundSound, 0, backgroundVolume, BACKGROUND_FADE_DURATION);
 						backgroundSound.addEventListener('timeupdate', onTimeUpdate);
 					}
 				};
 			}
 		};
 
-		// document.addEventListener('click', playBackground, { once: true });
+		document.addEventListener('click', playBackground, { once: true });
 
 		return () => {
 			if (browser) {
@@ -556,11 +596,153 @@
 			}
 		};
 	};
+
+	$effect(() => {
+		// Update spinning sound volume
+		if (spinningSound) {
+			spinningSound.volume = spinVolume;
+		}
+
+		// Update other sounds volume
+		[
+			clickSound,
+			tadaSound,
+			correctSound,
+			wrongSound1,
+			wrongSound2,
+			backgroundSound,
+			congratulationsSound,
+			hardLuckSound,
+			landedSound,
+			questionSound,
+			rightAnswerSound,
+			wrongAnswerSound,
+			typeSound
+		].forEach((sound) => {
+			if (sound) sound.volume = otherVolume;
+		});
+
+		// Update background sound volume
+		if (backgroundSound) {
+			backgroundSound.volume = backgroundVolume;
+		}
+	});
+
+	const handlePopupClick = (event: MouseEvent) => {
+		const target = event.target as HTMLElement;
+		if (target.classList.contains('volume-popup-overlay')) {
+			showVolumePopup = false;
+			if (clickSound) {
+				clickSound.currentTime = 0;
+				clickSound.volume = otherVolume;
+				clickSound.play();
+			}
+		}
+	};
+
+	const handlePopupKeydown = (event: KeyboardEvent) => {
+		if (event.key === 'Escape') {
+			showVolumePopup = false;
+			if (clickSound) {
+				clickSound.currentTime = 0;
+				clickSound.volume = otherVolume;
+				clickSound.play();
+			}
+		}
+	};
 </script>
 
 <main
 	class="bg-electric-indigo flex min-h-screen overflow-hidden text-white transition-colors duration-500"
 >
+	{#if showVolumePopup}
+		<div
+			transition:fade={{ duration: 300 }}
+			class="volume-popup-overlay fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+			onclick={handlePopupClick}
+			onkeydown={handlePopupKeydown}
+			role="button"
+			tabindex="0"
+		>
+			<div
+				in:scale={{ duration: 500, start: 1.05, easing: bounceOut }}
+				out:scale={{ duration: 300, start: 1.05 }}
+				class="bg-electric-indigo shadow-box relative mx-auto w-full max-w-[73.5rem] rounded-[2.29rem] p-20"
+			>
+				<div class="text-shadow-small font-apertura-black text-center text-[7.33rem] leading-none">
+					Volume Controls
+				</div>
+				<div class="mt-20 flex flex-col gap-16">
+					<div class="flex flex-col gap-8">
+						<div class="flex flex-col gap-8">
+							<div class="flex items-center justify-between">
+								<label
+									for="backgroundVolume"
+									class="text-shadow-small font-apertura-medium text-[4.43rem] leading-none"
+								>
+									Background Sound
+								</label>
+								<span class="text-shadow-small font-apertura-medium text-[4.43rem] leading-none">
+									{backgroundVolume}
+								</span>
+							</div>
+							<input
+								id="backgroundVolume"
+								type="range"
+								min="0.0001"
+								max="1"
+								step="0.001"
+								bind:value={backgroundVolume}
+								class="[&::-webkit-slider-thumb]:bg-electric-indigo my-8 h-[4.12rem] w-full appearance-none rounded-[0.75rem] bg-[#D9D9D9] [&::-webkit-slider-thumb]:my-auto [&::-webkit-slider-thumb]:h-[4.12rem] [&::-webkit-slider-thumb]:w-[4.12rem] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-2xl [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#D9D9D9]"
+							/>
+						</div>
+						<div class="flex items-center justify-between">
+							<label
+								for="spinVolume"
+								class="text-shadow-small font-apertura-medium text-[4.43rem] leading-none"
+							>
+								Spin Sound
+							</label>
+							<span class="text-shadow-small font-apertura-medium text-[4.43rem] leading-none">
+								{spinVolume}
+							</span>
+						</div>
+						<input
+							id="spinVolume"
+							type="range"
+							min="0.0001"
+							max="1"
+							step="0.001"
+							bind:value={spinVolume}
+							class="[&::-webkit-slider-thumb]:bg-electric-indigo my-8 h-[4.12rem] w-full appearance-none rounded-[0.75rem] bg-[#D9D9D9] [&::-webkit-slider-thumb]:my-auto [&::-webkit-slider-thumb]:h-[4.12rem] [&::-webkit-slider-thumb]:w-[4.12rem] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-2xl [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#D9D9D9]"
+						/>
+					</div>
+					<div class="flex flex-col gap-8">
+						<div class="flex items-center justify-between">
+							<label
+								for="otherVolume"
+								class="text-shadow-small font-apertura-medium text-[4.43rem] leading-none"
+							>
+								Other Sounds
+							</label>
+							<span class="text-shadow-small font-apertura-medium text-[4.43rem] leading-none">
+								{otherVolume}
+							</span>
+						</div>
+						<input
+							id="otherVolume"
+							type="range"
+							min="0.0001"
+							max="1"
+							step="0.001"
+							bind:value={otherVolume}
+							class="[&::-webkit-slider-thumb]:bg-electric-indigo my-8 h-[4.12rem] w-full appearance-none rounded-[0.75rem] bg-[#D9D9D9] [&::-webkit-slider-thumb]:my-auto [&::-webkit-slider-thumb]:h-[4.12rem] [&::-webkit-slider-thumb]:w-[4.12rem] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-2xl [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#D9D9D9]"
+						/>
+					</div>
+				</div>
+			</div>
+		</div>
+	{/if}
 	<div class="relative flex aspect-[4/7] w-full flex-col overflow-hidden pt-[19rem]">
 		<!-- <img
 			src="/images/background.webp"
@@ -608,6 +790,7 @@
 								bind:lastPosition
 								{clickSound}
 								{spinningSound}
+								{spinVolume}
 							/>
 						</div>
 						<div
