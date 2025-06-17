@@ -116,7 +116,7 @@
 	let ctx: CanvasRenderingContext2D;
 	let isSpinning = $state(false);
 	let spinSpeed = $state(0);
-	let spinDeceleration = $state(0.994);
+	let spinDeceleration = $state(0.99);
 	let lastTimestamp = $state(0);
 	let fontLoaded = $state(false);
 
