@@ -370,6 +370,7 @@
 		errorMessage = null; // Clear error when user starts typing
 		keyboardVisible = true;
 		if (clickSound) {
+			clickSound.currentTime = 0;
 			clickSound.play();
 		}
 	};
@@ -388,6 +389,7 @@
 		const checkbox = event.target as HTMLInputElement;
 		formState.stay_in_touch = checkbox.checked;
 		if (clickSound) {
+			clickSound.currentTime = 0;
 			clickSound.play();
 		}
 		keyboardVisible = false;
@@ -419,11 +421,13 @@
 		}
 		if (gameState === GAME_STATES.LANDED) {
 			if (landedSound) {
+				landedSound.currentTime = 0;
 				landedSound.play();
 			}
 		}
 		if (gameState === GAME_STATES.QUIZ) {
 			if (questionSound) {
+				questionSound.currentTime = 0;
 				questionSound.loop = true;
 				questionSound.play();
 			}
@@ -436,17 +440,20 @@
 
 		if (gameState === GAME_STATES.RESULT && isCorrect) {
 			if (correctSound) {
+				correctSound.currentTime = 0;
 				correctSound.play();
 			}
 		}
 		if (gameState === GAME_STATES.RESULT && !isCorrect) {
 			if (wrongAnswerSound) {
+				wrongAnswerSound.currentTime = 0;
 				wrongAnswerSound.play();
 			}
 		}
 
 		if (gameState === GAME_STATES.FINAL && isCorrect) {
 			if (tadaSound) {
+				tadaSound.currentTime = 0;
 				tadaSound.play();
 			}
 			// @ts-expect-error: no types for canvas-confetti
@@ -463,6 +470,7 @@
 
 		if (gameState === GAME_STATES.FINAL && !isCorrect) {
 			if (hardLuckSound) {
+				hardLuckSound.currentTime = 0;
 				hardLuckSound.play();
 			}
 		}
@@ -479,7 +487,7 @@
 
 	const playClickSound = () => {
 		if (clickSound) {
-			// clickSound.currentTime = 0.5;
+			clickSound.currentTime = 0;
 			clickSound.play();
 		}
 	};

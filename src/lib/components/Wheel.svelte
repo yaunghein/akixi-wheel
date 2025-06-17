@@ -15,7 +15,7 @@
 
 	const playClickSound = () => {
 		if (clickSound) {
-			// clickSound.currentTime = 0.5;
+			clickSound.currentTime = 0;
 			clickSound.play();
 		}
 	};
@@ -297,6 +297,7 @@
 			isSpinning = true;
 			spinningSound.loop = true;
 			spinningSound.volume = 0.2;
+			spinningSound.currentTime = 0;
 			spinningSound.play();
 			// spinningSound.addEventListener('timeupdate', () => {
 			// 	if (spinningSound.currentTime > 1.5) {
