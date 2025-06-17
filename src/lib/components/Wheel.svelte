@@ -25,7 +25,7 @@
 		text: string;
 		choices: [string, string, string];
 		correct: 'A' | 'B' | 'C';
-		explanation: string;
+		explanation: string | null;
 	};
 
 	type WheelSegment = {
@@ -37,78 +37,101 @@
 	// Sample data structure (this would come from CMS in production)
 	const wheelData: WheelSegment[] = [
 		{
+			text: 'CX Analytics',
+			color: '#22f4ad',
+			question: {
+				text: 'Which of the following best describes the primary function of Akixi CX Analytics?',
+				choices: [
+					'A messaging platform',
+					'Video conferencing and screen sharing tool',
+					'A call analytics solution that provides real-time and historical insights into call data'
+				],
+				correct: 'C',
+				explanation: null
+			}
+		},
+		{
+			text: 'Wallboards',
+			color: '#1cd2fa',
+			question: {
+				text: 'What is the primary function of Customisable Wallboards in a call centre environment?',
+				choices: [
+					'To automate outbound email marketing',
+					'To display live data on call queues, activity levels, and KPIs for better team performance',
+					'To archive historical call data for legal compliance'
+				],
+				correct: 'B',
+				explanation: null
+			}
+		},
+		{
 			text: 'Missed Call Recovery',
-			color: '#22f4ad',
-			question: {
-				text: '"Does Teams tell you which missed calls were never returned?"',
-				choices: ['YES', 'NO', 'Only via a third-party tool'],
-				correct: 'A',
-				explanation:
-					'Only Akixi fills this gap with real-time missed call tracking, optimising revenue and customer satisfaction.'
-			}
-		},
-		{
-			text: 'Call Tagging & Categorisation',
-			color: '#1cd2fa',
-			question: {
-				text: 'Which feature helps you recover missed sales opportunities?',
-				choices: ['Missed Call Recovery', 'Call Recording', 'Voicemail'],
-				correct: 'A',
-				explanation:
-					'Missed Call Recovery helps you recover missed sales opportunities by tracking and alerting you to missed calls.'
-			}
-		},
-		{
-			text: 'Custom Dashboards',
 			color: '#4450ff',
 			question: {
-				text: 'What is the main benefit of real-time missed call tracking?',
-				choices: ['Optimised revenue', 'Faster internet', 'Cheaper calls'],
-				correct: 'A',
-				explanation:
-					'Real-time missed call tracking helps optimise revenue and customer satisfaction.'
+				text: 'What is the primary purpose of Unreturned Lost Call Reports?',
+				choices: [
+					'To block spam and robocalls from reaching the call center',
+					'To analyse agent performance during live calls',
+					'To provide teams with data to follow up on missed calls and identify service or sales opportunities'
+				],
+				correct: 'C',
+				explanation: null
 			}
 		},
 		{
-			text: 'Akixi Reporting',
+			text: 'Call Volume by Interval',
 			color: '#1cd2fa',
 			question: {
-				text: 'Which of these is a third-party tool for Teams?',
-				choices: ['Akixi', 'Excel', 'Paint'],
-				correct: 'A',
-				explanation:
-					'Akixi is a third-party tool that integrates with Teams for advanced reporting.'
+				text: 'What is the main use of Call Interval and Volume Reports?',
+				choices: [
+					'Tracking customer satisfaction scores',
+					'Identifying peak call times to support staffing and resource planning',
+					'Monitoring internet bandwidth usage during calls'
+				],
+				correct: 'B',
+				explanation: null
 			}
 		},
 		{
-			text: 'History Reporting',
+			text: 'Call History Reporting',
 			color: '#22f4ad',
 			question: {
-				text: 'What does Akixi help you track?',
-				choices: ['Missed calls', 'Emails', 'SMS'],
-				correct: 'A',
-				explanation:
-					'Akixi helps you track missed calls, providing valuable insights for your business.'
+				text: 'How does Call Log History support dispute resolution?',
+				choices: [
+					'By allowing automatic call rerouting to senior staff',
+					'By tracking caller journeys to identify friction points in processes, teams, or individuals',
+					'By generating sales leads from unanswered calls'
+				],
+				correct: 'B',
+				explanation: null
 			}
 		},
 		{
-			text: 'Voicemail',
+			text: 'Auto Attendant & User reports',
 			color: '#4450ff',
 			question: {
-				text: 'Which is NOT a feature of Akixi?',
-				choices: ['Weather Forecast', 'Missed Call Recovery', 'Real-time Analytics'],
-				correct: 'A',
-				explanation: 'Weather Forecast is not a feature of Akixi.'
+				text: 'What is the main benefit of User / Auto Attendant Reports?',
+				choices: [
+					'To schedule training sessions for support staff',
+					'To measure the efficiency and customer experience provided by human and automated agents',
+					'To monitor email response rates'
+				],
+				correct: 'B',
+				explanation: null
 			}
 		},
 		{
-			text: 'Call Outcomes',
+			text: 'Queue & Group Activity',
 			color: '#1cd2fa',
 			question: {
-				text: 'Which feature helps you track the result of each call?',
-				choices: ['Call Outcomes', 'Voicemail', 'Custom Dashboards'],
-				correct: 'A',
-				explanation: 'Call Outcomes helps you track the result of each call for better analytics.'
+				text: 'What is the main objective of Queue and Group Activity Reports?',
+				choices: [
+					'To automate customer surveys after calls',
+					'To monitor queue data in real-time and historically in order to identify bottlenecks and improve service',
+					'To manage voicemail inboxes for multiple departments'
+				],
+				correct: 'B',
+				explanation: null
 			}
 		}
 	];

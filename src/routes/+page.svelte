@@ -20,7 +20,7 @@
 	const BACKGROUND_FADE_DURATION = 2000;
 
 	let segmentColor = $state('#FF6B6B');
-	let gameState = $state(GAME_STATES.START) as TGameState;
+	let gameState = $state(GAME_STATES.SPIN) as TGameState;
 	let showWheel = $derived(gameState === GAME_STATES.START || gameState === GAME_STATES.SPIN);
 	let isOnline = $state(browser ? navigator.onLine : true);
 
@@ -28,7 +28,7 @@
 	let showVolumePopup = $state(false);
 	let spinVolume = $state(0.2);
 	let otherVolume = $state(0.5);
-	let backgroundVolume = $state(0.075);
+	let backgroundVolume = $state(0);
 
 	let clickSound: HTMLAudioElement | null = $state(null);
 	let tadaSound: HTMLAudioElement | null = $state(null);
@@ -280,7 +280,7 @@
 		text: string;
 		choices: string[];
 		correct: 'A' | 'B' | 'C';
-		explanation: string;
+		explanation: string | null;
 	};
 
 	type WheelSegment = {
@@ -290,14 +290,17 @@
 	};
 
 	// let finalSegment: WheelSegment | null = $state({
-	// 	text: 'Call Tagging & Categorisation',
-	// 	color: '#1cd2fa',
+	// 	text: 'CX Analytics',
+	// 	color: '#22f4ad',
 	// 	question: {
-	// 		text: 'Which feature helps you recover missed sales opportunities?',
-	// 		choices: ['Missed Call Recovery', 'Call Recording', 'Voicemail'],
-	// 		correct: 'A',
-	// 		explanation:
-	// 			'Missed Call Recovery helps you recover missed sales opportunities by tracking and alerting you to missed calls.'
+	// 		text: 'Which of the following best describes the primary function of Akixi CX Analytics?',
+	// 		choices: [
+	// 			'A messaging platform',
+	// 			'Video conferencing and screen sharing tool',
+	// 			'A call analytics solution that provides real-time and historical insights into call data'
+	// 		],
+	// 		correct: 'C',
+	// 		explanation: null
 	// 	}
 	// });
 	let finalSegment: WheelSegment | null = $state(null);
@@ -942,11 +945,11 @@
 				>
 					{@render splitText(finalSegment.text)}
 					<p
-						class="text-shadow-small font-apertura-medium mx-auto mt-28 max-w-[73.5rem] text-center text-[4.43rem] leading-[1.2]"
+						class="text-shadow-small font-apertura-medium mx-auto mt-28 max-w-[80rem] text-center text-[4rem] leading-[1.2]"
 					>
 						{finalSegment.question.text}
 					</p>
-					<div class="mt-52 flex w-full max-w-[73.5rem] flex-col gap-20">
+					<div class="mt-40 flex w-full max-w-[80rem] flex-col gap-20">
 						{#each finalSegment.question.choices as choice, i}
 							<div class="flex items-center gap-16">
 								<span
@@ -956,7 +959,7 @@
 									{String.fromCharCode(65 + i)}
 								</span>
 								<span
-									class="text-shadow-small font-apertura-medium -translate-y-4 text-[4.43rem] leading-[1.2]"
+									class="text-shadow-small font-apertura-medium -translate-y-4 text-left text-[4rem] leading-[1.2]"
 								>
 									{choice}
 								</span>
@@ -966,7 +969,7 @@
 					<p class="text-shadow-small font-apertura-medium mt-52 text-[4.43rem] leading-none">
 						Select your answer below
 					</p>
-					<div class="mt-20 flex gap-[12.98rem]">
+					<div class="mt-20 flex gap-[16rem]">
 						{#each finalSegment.question.choices as _, i}
 							<button
 								class="shadow-box relative aspect-square w-[15.28rem] rounded-[2.29rem] transition-transform active:scale-90"
@@ -1028,9 +1031,11 @@
 							</div>
 						{/if}
 					</div>
-					<p class="mx-auto mt-20 max-w-[70rem] text-center text-[4.58rem] leading-[1.2]">
-						{finalSegment.question.explanation}
-					</p>
+					{#if finalSegment.question.explanation}
+						<p class="mx-auto mt-20 max-w-[70rem] text-center text-[4.58rem] leading-[1.2]">
+							{finalSegment.question.explanation}
+						</p>
+					{/if}
 				</div>
 			{/if}
 		{:else if gameState === GAME_STATES.FINAL}
