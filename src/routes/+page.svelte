@@ -26,9 +26,9 @@
 
 	// Volume control state
 	let showVolumePopup = $state(false);
-	let spinVolume = $state(0.2);
+	let spinVolume = $state(0.1011);
 	let otherVolume = $state(0.5);
-	let backgroundVolume = $state(0);
+	let backgroundVolume = $state(0.05);
 
 	let clickSound: HTMLAudioElement | null = $state(null);
 	let tadaSound: HTMLAudioElement | null = $state(null);
@@ -231,6 +231,7 @@
 		};
 
 		document.addEventListener('click', playBackground, { once: true });
+		// playBackground();
 
 		return () => {
 			if (browser) {
@@ -656,8 +657,24 @@
 </script>
 
 <main
-	class="bg-electric-indigo flex min-h-screen overflow-hidden text-white transition-colors duration-500"
+	class="bg-electric-indigo flex min-h-screen items-center justify-center overflow-hidden text-white transition-colors duration-500"
 >
+	<!-- <img
+			src="/images/background.webp"
+			alt="Background"
+			class="absolute inset-0 h-full w-full object-cover"
+		/> -->
+	<video
+		use:video
+		muted
+		loop
+		playsinline
+		autoplay
+		class="absolute inset-0 h-full w-full object-cover"
+	>
+		<source src="/videos/background-2k-2.mp4" type="video/mp4" />
+		<!-- <source src="/videos/background.webm" type="video/webm" /> -->
+	</video>
 	{#if showVolumePopup}
 		<div
 			transition:fade={{ duration: 300 }}
@@ -675,8 +692,8 @@
 				<div class="text-shadow-small font-apertura-black text-center text-[7.33rem] leading-none">
 					Volume Controls
 				</div>
-				<div class="mt-20 flex flex-col gap-16">
-					<div class="flex flex-col gap-8">
+				<div class="mt-20 flex flex-col">
+					<div class="flex flex-col gap-12">
 						<div class="flex flex-col gap-8">
 							<div class="flex items-center justify-between">
 								<label
@@ -699,63 +716,56 @@
 								class="[&::-webkit-slider-thumb]:bg-electric-indigo my-8 h-[4.12rem] w-full appearance-none rounded-[0.75rem] bg-[#D9D9D9] [&::-webkit-slider-thumb]:my-auto [&::-webkit-slider-thumb]:h-[4.12rem] [&::-webkit-slider-thumb]:w-[4.12rem] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-2xl [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#D9D9D9]"
 							/>
 						</div>
-						<div class="flex items-center justify-between">
-							<label
-								for="spinVolume"
-								class="text-shadow-small font-apertura-medium text-[4.43rem] leading-none"
-							>
-								Spin Sound
-							</label>
-							<span class="text-shadow-small font-apertura-medium text-[4.43rem] leading-none">
-								{spinVolume}
-							</span>
+						<div class="flex flex-col gap-8">
+							<div class="flex items-center justify-between">
+								<label
+									for="spinVolume"
+									class="text-shadow-small font-apertura-medium text-[4.43rem] leading-none"
+								>
+									Spin Sound
+								</label>
+								<span class="text-shadow-small font-apertura-medium text-[4.43rem] leading-none">
+									{spinVolume}
+								</span>
+							</div>
+							<input
+								id="spinVolume"
+								type="range"
+								min="0.0001"
+								max="1"
+								step="0.001"
+								bind:value={spinVolume}
+								class="[&::-webkit-slider-thumb]:bg-electric-indigo my-8 h-[4.12rem] w-full appearance-none rounded-[0.75rem] bg-[#D9D9D9] [&::-webkit-slider-thumb]:my-auto [&::-webkit-slider-thumb]:h-[4.12rem] [&::-webkit-slider-thumb]:w-[4.12rem] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-2xl [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#D9D9D9]"
+							/>
 						</div>
-						<input
-							id="spinVolume"
-							type="range"
-							min="0.0001"
-							max="1"
-							step="0.001"
-							bind:value={spinVolume}
-							class="[&::-webkit-slider-thumb]:bg-electric-indigo my-8 h-[4.12rem] w-full appearance-none rounded-[0.75rem] bg-[#D9D9D9] [&::-webkit-slider-thumb]:my-auto [&::-webkit-slider-thumb]:h-[4.12rem] [&::-webkit-slider-thumb]:w-[4.12rem] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-2xl [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#D9D9D9]"
-						/>
-					</div>
-					<div class="flex flex-col gap-8">
-						<div class="flex items-center justify-between">
-							<label
-								for="otherVolume"
-								class="text-shadow-small font-apertura-medium text-[4.43rem] leading-none"
-							>
-								Other Sounds
-							</label>
-							<span class="text-shadow-small font-apertura-medium text-[4.43rem] leading-none">
-								{otherVolume}
-							</span>
+						<div class="flex flex-col gap-8">
+							<div class="flex items-center justify-between">
+								<label
+									for="otherVolume"
+									class="text-shadow-small font-apertura-medium text-[4.43rem] leading-none"
+								>
+									Other Sounds
+								</label>
+								<span class="text-shadow-small font-apertura-medium text-[4.43rem] leading-none">
+									{otherVolume}
+								</span>
+							</div>
+							<input
+								id="otherVolume"
+								type="range"
+								min="0.0001"
+								max="1"
+								step="0.001"
+								bind:value={otherVolume}
+								class="[&::-webkit-slider-thumb]:bg-electric-indigo my-8 h-[4.12rem] w-full appearance-none rounded-[0.75rem] bg-[#D9D9D9] [&::-webkit-slider-thumb]:my-auto [&::-webkit-slider-thumb]:h-[4.12rem] [&::-webkit-slider-thumb]:w-[4.12rem] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-2xl [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#D9D9D9]"
+							/>
 						</div>
-						<input
-							id="otherVolume"
-							type="range"
-							min="0.0001"
-							max="1"
-							step="0.001"
-							bind:value={otherVolume}
-							class="[&::-webkit-slider-thumb]:bg-electric-indigo my-8 h-[4.12rem] w-full appearance-none rounded-[0.75rem] bg-[#D9D9D9] [&::-webkit-slider-thumb]:my-auto [&::-webkit-slider-thumb]:h-[4.12rem] [&::-webkit-slider-thumb]:w-[4.12rem] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-2xl [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#D9D9D9]"
-						/>
 					</div>
 				</div>
 			</div>
 		</div>
 	{/if}
-	<div class="relative flex aspect-[4/7] w-full flex-col overflow-hidden pt-[19rem]">
-		<!-- <img
-			src="/images/background.webp"
-			alt="Background"
-			class="absolute inset-0 h-full w-full object-cover"
-		/> -->
-		<video use:video muted loop playsinline class="absolute inset-0 h-full w-full object-cover">
-			<source src="/videos/background-2k.mp4" type="video/mp4" />
-			<!-- <source src="/videos/background.webm" type="video/webm" /> -->
-		</video>
+	<div class="relative flex aspect-[4/7] w-full flex-col overflow-hidden pt-[13rem]">
 		<div class="relative mx-auto mb-auto aspect-[1/0.27] w-[40.5rem]">
 			<Logo />
 		</div>
@@ -778,6 +788,11 @@
 				{@render spinAndWin()}
 				<div class="my-auto w-full">
 					<div class="relative p-[0.65rem] sm:p-[2rem]">
+						<img
+							src="/images/wheel-bg.png"
+							alt=""
+							class="pointer-events-none absolute inset-0 aspect-square w-full -translate-y-[4.5rem] scale-[0.98] opacity-[0.6]"
+						/>
 						<div
 							class="pointer-events-none absolute inset-0 h-full w-full"
 							style="transform: rotate({(rotation * 180) / Math.PI + 26.2}deg);"
@@ -999,7 +1014,7 @@
 					class="relative mt-32 flex h-full w-full flex-col items-center text-center text-[7.33rem]"
 				>
 					{@render splitText(finalSegment.text)}
-					<div class="mt-28 flex flex-col items-center">
+					<div class="mt-36 flex flex-col items-center">
 						<div
 							class="shadow-box relative grid aspect-square w-[15.28rem] place-items-center rounded-[2.29rem] text-white"
 							style="background: {selectedAnswer === 'A'
