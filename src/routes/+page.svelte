@@ -11,6 +11,7 @@
 	import { bounceOut } from 'svelte/easing';
 	import { browser } from '$app/environment';
 	import toast from 'svelte-french-toast';
+	import lottie from 'lottie-web';
 
 	const TOAST_CONFIG = {
 		position: 'bottom-center',
@@ -20,7 +21,7 @@
 	const BACKGROUND_FADE_DURATION = 2000;
 
 	let segmentColor = $state('#FF6B6B');
-	let gameState = $state(GAME_STATES.START) as TGameState;
+	let gameState = $state(GAME_STATES.QUIZ) as TGameState;
 	let showWheel = $derived(gameState === GAME_STATES.START || gameState === GAME_STATES.SPIN);
 	let isOnline = $state(browser ? navigator.onLine : true);
 
@@ -239,21 +240,21 @@
 		question: QuizQuestion;
 	};
 
-	// let finalSegment: WheelSegment | null = $state({
-	// 	text: 'CX Analytics',
-	// 	color: '#22f4ad',
-	// 	question: {
-	// 		text: 'Which of the following best describes the primary function of Akixi CX Analytics?',
-	// 		choices: [
-	// 			'A messaging platform',
-	// 			'Video conferencing and screen sharing tool',
-	// 			'A call analytics solution that provides real-time and historical insights into call data'
-	// 		],
-	// 		correct: 'C',
-	// 		explanation: null
-	// 	}
-	// });
-	let finalSegment: WheelSegment | null = $state(null);
+	let finalSegment: WheelSegment | null = $state({
+		text: 'CX Analytics',
+		color: '#22f4ad',
+		question: {
+			text: 'Which of the following best describes the primary function of Akixi CX Analytics?',
+			choices: [
+				'A messaging platform',
+				'Video conferencing and screen sharing tool',
+				'A call analytics solution that provides real-time and historical insights into call data'
+			],
+			correct: 'C',
+			explanation: null
+		}
+	});
+	// let finalSegment: WheelSegment | null = $state(null);
 
 	type FormState = {
 		first_name: string;
@@ -679,6 +680,16 @@
 		} else {
 			playBackground();
 		}
+	};
+
+	const lottiePlayer = (node: HTMLDivElement, path: string) => {
+		const player = lottie.loadAnimation({
+			container: node,
+			renderer: 'svg',
+			loop: true,
+			autoplay: true,
+			path
+		});
 	};
 </script>
 
@@ -1123,11 +1134,15 @@
 				</div>
 			{:else}
 				<div class="relative my-auto -translate-y-[10rem] text-center leading-none">
-					<img
+					<!-- <img
 						src="/images/sad.svg"
 						alt="Sad face"
 						class="mx-auto mb-20 aspect-square w-[30.09rem] shrink-0"
-					/>
+					/> -->
+					<div
+						use:lottiePlayer={'/lotties/hard-luck.json'}
+						class="mx-auto mb-20 aspect-square w-[30.09rem] shrink-0"
+					></div>
 					<div class="font-apertura-black text-aquamarineo text-shadow-small text-[10.08rem]">
 						Hard luck
 					</div>
