@@ -48,6 +48,9 @@
 	let rotation = $state(0);
 	let lastPosition = $state(0);
 
+	let isSoundOn = $state(false);
+	let isBackgroundPlaying = $state(false);
+
 	onMount(() => {
 		clickSound = new Audio('/sounds/click2.mp3');
 		tadaSound = new Audio('/sounds/congratulations.mp3');
@@ -176,61 +179,7 @@
 			}
 		}
 
-		const fadeVolume = (audio: HTMLAudioElement, from: number, to: number, duration: number) => {
-			const steps = 30;
-			const stepTime = duration / steps;
-			let currentStep = 0;
-			const volumeStep = (to - from) / steps;
-			audio.volume = from;
-			const interval = setInterval(() => {
-				currentStep++;
-				audio.volume = Math.max(0, Math.min(1, audio.volume + volumeStep));
-				if (currentStep >= steps) {
-					audio.volume = to;
-					clearInterval(interval);
-				}
-			}, stepTime);
-		};
-
-		const playBackground = () => {
-			if (backgroundSound) {
-				backgroundSound.loop = false; // We'll handle looping manually
-				backgroundSound.volume = 0;
-				backgroundSound.currentTime = 0;
-				backgroundSound.play();
-
-				// Fade in
-				fadeVolume(backgroundSound, 0, backgroundVolume, BACKGROUND_FADE_DURATION);
-
-				const fadeOutDuration = BACKGROUND_FADE_DURATION;
-				const onTimeUpdate = () => {
-					if (
-						backgroundSound &&
-						backgroundSound.duration &&
-						backgroundSound.currentTime > backgroundSound.duration - fadeOutDuration / 1000
-					) {
-						// Fade out only once per loop
-						backgroundSound.removeEventListener('timeupdate', onTimeUpdate);
-						fadeVolume(backgroundSound, backgroundSound.volume, 0, BACKGROUND_FADE_DURATION);
-					}
-				};
-
-				backgroundSound.addEventListener('timeupdate', onTimeUpdate);
-
-				backgroundSound.onended = () => {
-					if (backgroundSound) {
-						// Reset and loop
-						backgroundSound.currentTime = 0;
-						backgroundSound.volume = 0;
-						backgroundSound.play();
-						fadeVolume(backgroundSound, 0, backgroundVolume, BACKGROUND_FADE_DURATION);
-						backgroundSound.addEventListener('timeupdate', onTimeUpdate);
-					}
-				};
-			}
-		};
-
-		document.addEventListener('click', playBackground, { once: true });
+		// document.addEventListener('click', playBackground, { once: true });
 		// playBackground();
 
 		return () => {
@@ -632,6 +581,11 @@
 		}
 	});
 
+	$effect(() => {
+		// Sync isSoundOn with isBackgroundPlaying
+		isSoundOn = isBackgroundPlaying;
+	});
+
 	const handlePopupClick = (event: MouseEvent) => {
 		const target = event.target as HTMLElement;
 		if (target.classList.contains('volume-popup-overlay')) {
@@ -652,6 +606,78 @@
 				clickSound.volume = otherVolume;
 				clickSound.play();
 			}
+		}
+	};
+
+	const fadeVolume = (audio: HTMLAudioElement, from: number, to: number, duration: number) => {
+		const steps = 30;
+		const stepTime = duration / steps;
+		let currentStep = 0;
+		const volumeStep = (to - from) / steps;
+		audio.volume = from;
+		const interval = setInterval(() => {
+			currentStep++;
+			audio.volume = Math.max(0, Math.min(1, audio.volume + volumeStep));
+			if (currentStep >= steps) {
+				audio.volume = to;
+				clearInterval(interval);
+			}
+		}, stepTime);
+	};
+
+	const stopBackground = () => {
+		if (backgroundSound) {
+			backgroundSound.pause();
+			backgroundSound.currentTime = 0;
+			backgroundSound.volume = 0;
+			isBackgroundPlaying = false;
+		}
+	};
+
+	const playBackground = () => {
+		if (backgroundSound) {
+			backgroundSound.loop = false; // We'll handle looping manually
+			backgroundSound.volume = 0;
+			backgroundSound.currentTime = 0;
+			backgroundSound.play();
+			isBackgroundPlaying = true;
+
+			// Fade in
+			fadeVolume(backgroundSound, 0, backgroundVolume, BACKGROUND_FADE_DURATION);
+
+			const fadeOutDuration = BACKGROUND_FADE_DURATION;
+			const onTimeUpdate = () => {
+				if (
+					backgroundSound &&
+					backgroundSound.duration &&
+					backgroundSound.currentTime > backgroundSound.duration - fadeOutDuration / 1000
+				) {
+					// Fade out only once per loop
+					backgroundSound.removeEventListener('timeupdate', onTimeUpdate);
+					fadeVolume(backgroundSound, backgroundSound.volume, 0, BACKGROUND_FADE_DURATION);
+				}
+			};
+
+			backgroundSound.addEventListener('timeupdate', onTimeUpdate);
+
+			backgroundSound.onended = () => {
+				if (backgroundSound && isBackgroundPlaying) {
+					// Reset and loop
+					backgroundSound.currentTime = 0;
+					backgroundSound.volume = 0;
+					backgroundSound.play();
+					fadeVolume(backgroundSound, 0, backgroundVolume, BACKGROUND_FADE_DURATION);
+					backgroundSound.addEventListener('timeupdate', onTimeUpdate);
+				}
+			};
+		}
+	};
+
+	const toggleBackground = () => {
+		if (isBackgroundPlaying) {
+			stopBackground();
+		} else {
+			playBackground();
 		}
 	};
 </script>
@@ -675,6 +701,22 @@
 		<source src="/videos/background-2k-2.mp4" type="video/mp4" />
 		<!-- <source src="/videos/background.webm" type="video/webm" /> -->
 	</video>
+	{#if gameState === GAME_STATES.START}
+		<button
+			onmouseup={() => {
+				playClickSound();
+				toggleBackground();
+				isSoundOn = !isSoundOn;
+			}}
+			class="absolute top-16 right-16 z-50 w-[3.5rem] cursor-pointer border-none transition-transform focus:outline-none"
+		>
+			{#if isSoundOn}
+				<img src="/images/sound-on.svg" alt="" />
+			{:else}
+				<img src="/images/sound-off.svg" alt="" />
+			{/if}
+		</button>
+	{/if}
 	{#if showVolumePopup}
 		<div
 			transition:fade={{ duration: 300 }}
