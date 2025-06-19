@@ -18,8 +18,6 @@
 		duration: 3000
 	} as const;
 
-	const BACKGROUND_FADE_DURATION = 2000;
-
 	let segmentColor = $state('#FF6B6B');
 	let gameState = $state(GAME_STATES.START) as TGameState;
 	let showWheel = $derived(gameState === GAME_STATES.START || gameState === GAME_STATES.SPIN);
@@ -27,9 +25,9 @@
 
 	// Volume control state
 	let showVolumePopup = $state(false);
-	let spinVolume = $state(0.1011);
-	let otherVolume = $state(0.5);
-	let backgroundVolume = $state(0.05);
+	let spinVolume = $state(0.05);
+	let otherVolume = $state(0.25);
+	let backgroundVolume = $state(0.03);
 
 	let clickSound: HTMLAudioElement | null = $state(null);
 	let tadaSound: HTMLAudioElement | null = $state(null);
@@ -48,9 +46,6 @@
 
 	let rotation = $state(0);
 	let lastPosition = $state(0);
-
-	let isSoundOn = $state(false);
-	let isBackgroundPlaying = $state(false);
 
 	onMount(() => {
 		clickSound = new Audio('/sounds/click2.mp3');
@@ -582,11 +577,6 @@
 		}
 	});
 
-	$effect(() => {
-		// Sync isSoundOn with isBackgroundPlaying
-		isSoundOn = isBackgroundPlaying;
-	});
-
 	const handlePopupClick = (event: MouseEvent) => {
 		const target = event.target as HTMLElement;
 		if (target.classList.contains('volume-popup-overlay')) {
@@ -610,78 +600,6 @@
 		}
 	};
 
-	const fadeVolume = (audio: HTMLAudioElement, from: number, to: number, duration: number) => {
-		const steps = 30;
-		const stepTime = duration / steps;
-		let currentStep = 0;
-		const volumeStep = (to - from) / steps;
-		audio.volume = from;
-		const interval = setInterval(() => {
-			currentStep++;
-			audio.volume = Math.max(0, Math.min(1, audio.volume + volumeStep));
-			if (currentStep >= steps) {
-				audio.volume = to;
-				clearInterval(interval);
-			}
-		}, stepTime);
-	};
-
-	const stopBackground = () => {
-		if (backgroundSound) {
-			backgroundSound.pause();
-			backgroundSound.currentTime = 0;
-			backgroundSound.volume = 0;
-			isBackgroundPlaying = false;
-		}
-	};
-
-	const playBackground = () => {
-		if (backgroundSound) {
-			backgroundSound.loop = false; // We'll handle looping manually
-			backgroundSound.volume = 0;
-			backgroundSound.currentTime = 0;
-			backgroundSound.play();
-			isBackgroundPlaying = true;
-
-			// Fade in
-			fadeVolume(backgroundSound, 0, backgroundVolume, BACKGROUND_FADE_DURATION);
-
-			const fadeOutDuration = BACKGROUND_FADE_DURATION;
-			const onTimeUpdate = () => {
-				if (
-					backgroundSound &&
-					backgroundSound.duration &&
-					backgroundSound.currentTime > backgroundSound.duration - fadeOutDuration / 1000
-				) {
-					// Fade out only once per loop
-					backgroundSound.removeEventListener('timeupdate', onTimeUpdate);
-					fadeVolume(backgroundSound, backgroundSound.volume, 0, BACKGROUND_FADE_DURATION);
-				}
-			};
-
-			backgroundSound.addEventListener('timeupdate', onTimeUpdate);
-
-			backgroundSound.onended = () => {
-				if (backgroundSound && isBackgroundPlaying) {
-					// Reset and loop
-					backgroundSound.currentTime = 0;
-					backgroundSound.volume = 0;
-					backgroundSound.play();
-					fadeVolume(backgroundSound, 0, backgroundVolume, BACKGROUND_FADE_DURATION);
-					backgroundSound.addEventListener('timeupdate', onTimeUpdate);
-				}
-			};
-		}
-	};
-
-	const toggleBackground = () => {
-		if (isBackgroundPlaying) {
-			stopBackground();
-		} else {
-			playBackground();
-		}
-	};
-
 	const lottiePlayer = (node: HTMLDivElement, path: string) => {
 		const player = lottie.loadAnimation({
 			container: node,
@@ -691,6 +609,9 @@
 			path
 		});
 	};
+
+	import { getAudioState } from '$lib/states/audio.svelte';
+	const audioState = getAudioState();
 </script>
 
 <main
@@ -715,13 +636,12 @@
 	{#if gameState === GAME_STATES.START}
 		<button
 			onmouseup={() => {
-				playClickSound();
-				toggleBackground();
-				isSoundOn = !isSoundOn;
+				audioState.play('click');
+				audioState.toggleBackground();
 			}}
 			class="absolute top-16 right-16 z-50 w-[3.5rem] cursor-pointer border-none transition-transform focus:outline-none"
 		>
-			{#if isSoundOn}
+			{#if audioState.isBackgroundPlaying}
 				<img src="/images/sound-on.svg" alt="" />
 			{:else}
 				<img src="/images/sound-off.svg" alt="" />
@@ -756,7 +676,7 @@
 									Background Sound
 								</label>
 								<span class="text-shadow-small font-apertura-medium text-[4.43rem] leading-none">
-									{backgroundVolume}
+									{audioState.volumns.background}
 								</span>
 							</div>
 							<input
@@ -765,7 +685,7 @@
 								min="0.0001"
 								max="1"
 								step="0.001"
-								bind:value={backgroundVolume}
+								bind:value={audioState.volumns.background}
 								class="[&::-webkit-slider-thumb]:bg-electric-indigo my-8 h-[4.12rem] w-full appearance-none rounded-[0.75rem] bg-[#D9D9D9] [&::-webkit-slider-thumb]:my-auto [&::-webkit-slider-thumb]:h-[4.12rem] [&::-webkit-slider-thumb]:w-[4.12rem] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-2xl [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#D9D9D9]"
 							/>
 						</div>
