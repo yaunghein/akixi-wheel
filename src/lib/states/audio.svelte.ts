@@ -1,44 +1,60 @@
 import { getContext, setContext } from 'svelte';
 
-type TAudioKey = 'click' | 'background' | 'spin';
-type TAudiosRaw = Partial<Record<TAudioKey, string>>;
-type TAudios = Partial<Record<TAudioKey, HTMLAudioElement>>;
-
+const AUDIO_KEY = Symbol('WHEEL_AUDIO');
 const FADE_DURATION = 3000;
 const FADE_STEPS = 50;
 
 class AudioState {
-	_audios: TAudiosRaw = {};
-
 	audios = $state<TAudios>({});
-	volumns = $state({ background: 0.02, spin: 0.05, others: 0.25 });
+	volumes = $state({ background: 0.02, spin: 0.05, others: 0.25 });
 	isBackgroundPlaying = $state(false);
 
-	constructor(audios: TAudiosRaw) {
-		this._audios = audios;
-
+	constructor() {
 		$effect(() => {
-			if (this.audios.background) {
-				this.audios.background.volume = this.volumns.background;
+			if (this.volumes.background && this.audios.background) {
+				this.audios.background.volume = this.volumes.background;
+			}
+			if (this.volumes.spin && this.audios.spin) {
+				this.audios.spin.volume = this.volumes.spin;
+			}
+			if (this.volumes.others) {
+				Object.keys(this.audios).forEach((key) => {
+					if (key !== 'background' && key !== 'spin') {
+						const audio = this.audios[key as TAudioKey];
+						if (audio) audio.volume = this.volumes.others;
+					}
+				});
 			}
 		});
 	}
 
-	load() {
-		Object.entries(this._audios).forEach(([key, path]) => {
+	load(audios: TAudiosRaw) {
+		Object.entries(audios).forEach(([key, path]) => {
 			this.audios[key as TAudioKey] = new Audio(path);
 		});
 	}
 
-	play(key: TAudioKey) {
+	play(key: TAudioKey, options: TPlayOptions = {}) {
+		Object.keys(this.audios).forEach((_key) => {
+			const excludeKeys = ['background', 'spin'];
+			if (!excludeKeys.includes(_key)) this.pause(_key as TAudioKey);
+		});
+
 		const audio = this.audios[key];
 		if (!audio) return;
 
-		if (key === 'spin') audio.volume = this.volumns.spin;
-		if (key !== 'background' && key !== 'spin') audio.volume = this.volumns.others;
+		if (key === 'spin') audio.volume = this.volumes.spin;
+		if (key !== 'background' && key !== 'spin') audio.volume = this.volumes.others;
 
+		audio.loop = options.loop ?? false;
 		audio.currentTime = 0;
-		audio.play();
+		audio.play().catch(() => {}); // just to ignore abort error which is not important
+	}
+
+	pause(key: TAudioKey) {
+		const audio = this.audios[key];
+		if (!audio) return;
+		audio.pause();
 	}
 
 	toggleBackground() {
@@ -55,7 +71,7 @@ class AudioState {
 		background.play();
 		this.isBackgroundPlaying = true;
 
-		this.fadeVolume('background', 0, this.volumns.background);
+		this.fadeVolume('background', 0, this.volumes.background);
 
 		const onTimeUpdate = () => {
 			if (
@@ -75,7 +91,7 @@ class AudioState {
 				background.currentTime = 0;
 				background.volume = 0;
 				background.play();
-				this.fadeVolume('background', 0, this.volumns.background);
+				this.fadeVolume('background', 0, this.volumes.background);
 				background.addEventListener('timeupdate', onTimeUpdate);
 			}
 		};
@@ -129,12 +145,27 @@ class AudioState {
 	}
 }
 
-const AUDIO_KEY = Symbol('WHEEL_AUDIO');
-
-export const setAudioState = (audios: Record<string, string>) => {
-	return setContext(AUDIO_KEY, new AudioState(audios));
+export const setAudioState = () => {
+	return setContext(AUDIO_KEY, new AudioState());
 };
 
 export const getAudioState = () => {
 	return getContext<ReturnType<typeof setAudioState>>(AUDIO_KEY);
+};
+
+type TAudioKey =
+	| 'click'
+	| 'background'
+	| 'type'
+	| 'spin'
+	| 'landed'
+	| 'question'
+	| 'right'
+	| 'wrong'
+	| 'hardluck'
+	| 'congratulations';
+type TAudiosRaw = Partial<Record<TAudioKey, string>>;
+type TAudios = Partial<Record<TAudioKey, HTMLAudioElement>>;
+type TPlayOptions = {
+	loop?: boolean;
 };

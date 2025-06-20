@@ -1,25 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { GAME_STATES, type TGameState } from '$lib/constants';
+	import { getAudioState } from '$lib/states/audio.svelte';
+	import { getGameState, GAME_STATES_ENUM } from '$lib/states/game.svelte';
 
-	let {
-		segmentColor = $bindable(),
-		gameState = $bindable(),
-		finalSegment = $bindable(),
-		CLICK_DELAY = $bindable(200),
-		clickSound,
-		spinningSound,
-		spinVolume,
-		rotation = $bindable(0),
-		lastPosition = $bindable(0)
-	} = $props();
-
-	const playClickSound = () => {
-		if (clickSound) {
-			clickSound.currentTime = 0;
-			clickSound.play();
-		}
-	};
+	const audioState = getAudioState();
+	const gameState = getGameState();
 
 	type QuizQuestion = {
 		text: string;
@@ -144,8 +130,6 @@
 	let lastTimestamp = $state(0);
 	let fontLoaded = $state(false);
 
-	segmentColor = wheelData[0].color;
-
 	onMount(() => {
 		ctx = canvas.getContext('2d')!;
 		// Set high resolution
@@ -157,7 +141,7 @@
 
 		// Set initial rotation based on last position
 		const segmentAngle = (2 * Math.PI) / wheelData.length;
-		rotation = lastPosition * segmentAngle;
+		gameState.rotation = gameState.lastPosition * segmentAngle;
 
 		// Load the font
 		const font = new FontFace('AperturaBlack', 'url(/fonts/apertura-black.otf)');
@@ -184,7 +168,7 @@
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 		// Draw the main wheel (fully opaque)
-		drawWheelSegments(ctx, centerX, centerY, radius, rotation);
+		drawWheelSegments(ctx, centerX, centerY, radius, gameState.rotation);
 	}
 
 	function drawWheelSegments(
@@ -263,45 +247,32 @@
 		lastTimestamp = timestamp;
 
 		if (isSpinning) {
-			rotation += spinSpeed * deltaTime;
+			gameState.rotation += spinSpeed * deltaTime;
 			spinSpeed *= spinDeceleration;
 
 			const segmentAngle = (2 * Math.PI) / wheelData.length;
 			// Normalize rotation to 0 to 2π
-			const normalizedRotation = ((rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+			// const normalizedRotation = ((rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
 			// Adjust for the top (pointer) being at -90 degrees (i.e., 3π/2 radians)
-			const adjustedAngle = (2 * Math.PI + Math.PI * 1.5 - normalizedRotation) % (2 * Math.PI);
-			const currentIndex = Math.floor(adjustedAngle / segmentAngle) % wheelData.length;
-			segmentColor = wheelData[currentIndex].color;
-
-			// decrease volume sync with spinSpeed, spinSpeed is low, volume is low
-			// if (spinningSound) {
-			// 	// Scale spinSpeed to a 0-1 range for volume
-			// 	const maxSpeed = 0.07; // Maximum speed we expect
-			// 	let volume = Math.min(Math.max(spinSpeed / maxSpeed, 0), 1);
-			// 	if (volume < 0.1) {
-			// 		volume = 0.1;
-			// 	}
-			// 	spinningSound.volume = volume;
-			// }
+			// const adjustedAngle = (2 * Math.PI + Math.PI * 1.5 - normalizedRotation) % (2 * Math.PI);
+			// const currentIndex = Math.floor(adjustedAngle / segmentAngle) % wheelData.length;
 
 			if (spinSpeed < 0.0001) {
 				isSpinning = false;
-				spinningSound.pause();
+				audioState.pause('spin');
 				spinSpeed = 0;
 				// Normalize rotation to 0 to 2π
-				const normalizedRotation = ((rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+				const normalizedRotation =
+					((gameState.rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
 				// Adjust for the top (pointer) being at -90 degrees (i.e., 3π/2 radians)
 				const adjustedAngle = (2 * Math.PI + Math.PI * 1.5 - normalizedRotation) % (2 * Math.PI);
 				const winningIndex = Math.floor(adjustedAngle / segmentAngle) % wheelData.length;
 
 				// Store the normalized rotation
-				lastPosition = normalizedRotation;
+				gameState.lastPosition = normalizedRotation;
 				console.log('Wheel landed on:', wheelData[winningIndex]);
-				finalSegment = wheelData[winningIndex];
-				setTimeout(() => {
-					gameState = GAME_STATES.LANDED;
-				}, 1000);
+				gameState.winSegment = wheelData[winningIndex];
+				gameState.move(+1);
 			}
 
 			drawWheel();
@@ -310,31 +281,28 @@
 	}
 
 	function spinWheel() {
-		playClickSound();
+		audioState.play('click');
 
-		if (gameState === GAME_STATES.START) {
-			gameState = GAME_STATES.FORM;
+		if (gameState.current === GAME_STATES_ENUM.START) {
+			gameState.move(+1);
 			return;
 		}
 
 		if (!isSpinning) {
 			isSpinning = true;
-			spinningSound.loop = true;
-			spinningSound.volume = spinVolume;
-			spinningSound.currentTime = 0;
-			spinningSound.play();
+			audioState.play('spin', { loop: true });
 			// spinningSound.addEventListener('timeupdate', () => {
 			// 	if (spinningSound.currentTime > 1.5) {
 			// 		spinningSound.currentTime = 0;
 			// 	}
 			// });
 			// Use the stored normalized rotation
-			rotation = lastPosition;
+			gameState.rotation = gameState.lastPosition;
 
 			// Slower initial speed with smaller random variation
 			spinSpeed = 0.02 + Math.random() * 0.03 + Math.random() * 0.02;
 			// Add random rotation to ensure different final positions
-			rotation += Math.random() * Math.PI * 2;
+			gameState.rotation += Math.random() * Math.PI * 2;
 			lastTimestamp = 0;
 			requestAnimationFrame(animate);
 		}
@@ -349,7 +317,7 @@
 		disabled={isSpinning}
 	>
 		<span class="translate-y-3 whitespace-nowrap">
-			{#if gameState === GAME_STATES.START}
+			{#if gameState.current === GAME_STATES_ENUM.START}
 				Start
 			{:else}
 				Spin
