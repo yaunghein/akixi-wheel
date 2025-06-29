@@ -1,126 +1,12 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { GAME_STATES, type TGameState } from '$lib/constants';
 	import { getAudioState } from '$lib/states/audio.svelte';
 	import { getGameState, GAME_STATES_ENUM } from '$lib/states/game.svelte';
 
+	let { segments } = $props();
+
 	const audioState = getAudioState();
 	const gameState = getGameState();
-
-	type QuizQuestion = {
-		text: string;
-		choices: [string, string, string];
-		correct: 'A' | 'B' | 'C';
-		explanation: string | null;
-	};
-
-	type WheelSegment = {
-		text: string;
-		color: string;
-		question: QuizQuestion;
-	};
-
-	// Sample data structure (this would come from CMS in production)
-	const wheelData: WheelSegment[] = [
-		{
-			text: 'CX Analytics',
-			color: '#22f4ad',
-			question: {
-				text: 'Which of the following best describes the primary function of Akixi CX Analytics?',
-				choices: [
-					'A messaging platform',
-					'Video conferencing and screen sharing tool',
-					'A call analytics solution that provides real-time and historical insights into call data'
-				],
-				correct: 'C',
-				explanation: null
-			}
-		},
-		{
-			text: 'Wallboards',
-			color: '#1cd2fa',
-			question: {
-				text: 'What is the primary function of Customisable Wallboards in a call centre environment?',
-				choices: [
-					'To automate outbound email marketing',
-					'To display live data on call queues, activity levels, and KPIs for better team performance',
-					'To archive historical call data for legal compliance'
-				],
-				correct: 'B',
-				explanation: null
-			}
-		},
-		{
-			text: 'Missed Call Recovery',
-			color: '#4450ff',
-			question: {
-				text: 'What is the primary purpose of Unreturned Lost Call Reports?',
-				choices: [
-					'To block spam and robocalls from reaching the call center',
-					'To analyse agent performance during live calls',
-					'To provide teams with data to follow up on missed calls and identify service or sales opportunities'
-				],
-				correct: 'C',
-				explanation: null
-			}
-		},
-		{
-			text: 'Call Volume by Interval',
-			color: '#1cd2fa',
-			question: {
-				text: 'What is the main use of Call Interval and Volume Reports?',
-				choices: [
-					'Tracking customer satisfaction scores',
-					'Identifying peak call times to support staffing and resource planning',
-					'Monitoring internet bandwidth usage during calls'
-				],
-				correct: 'B',
-				explanation: null
-			}
-		},
-		{
-			text: 'Call History Reporting',
-			color: '#22f4ad',
-			question: {
-				text: 'How does Call Log History support dispute resolution?',
-				choices: [
-					'By allowing automatic call rerouting to senior staff',
-					'By tracking caller journeys to identify friction points in processes, teams, or individuals',
-					'By generating sales leads from unanswered calls'
-				],
-				correct: 'B',
-				explanation: null
-			}
-		},
-		{
-			text: 'Auto Attendant & User reports',
-			color: '#4450ff',
-			question: {
-				text: 'What is the main benefit of User / Auto Attendant Reports?',
-				choices: [
-					'To schedule training sessions for support staff',
-					'To measure the efficiency and customer experience provided by human and automated agents',
-					'To monitor email response rates'
-				],
-				correct: 'B',
-				explanation: null
-			}
-		},
-		{
-			text: 'Queue & Group Activity',
-			color: '#1cd2fa',
-			question: {
-				text: 'What is the main objective of Queue and Group Activity Reports?',
-				choices: [
-					'To automate customer surveys after calls',
-					'To monitor queue data in real-time and historically in order to identify bottlenecks and improve service',
-					'To manage voicemail inboxes for multiple departments'
-				],
-				correct: 'B',
-				explanation: null
-			}
-		}
-	];
 
 	let canvas: HTMLCanvasElement;
 	let ctx: CanvasRenderingContext2D;
@@ -140,7 +26,7 @@
 		ctx.scale(dpr, dpr);
 
 		// Set initial rotation based on last position
-		const segmentAngle = (2 * Math.PI) / wheelData.length;
+		const segmentAngle = (2 * Math.PI) / segments.length;
 		gameState.rotation = gameState.lastPosition * segmentAngle;
 
 		// Load the font
@@ -179,8 +65,8 @@
 		rotation: number
 	) {
 		// Draw segments
-		const segmentAngle = (2 * Math.PI) / wheelData.length;
-		wheelData.forEach((segment, index) => {
+		const segmentAngle = (2 * Math.PI) / segments.length;
+		segments.forEach((segment: any, index: number) => {
 			const startAngle = index * segmentAngle + rotation;
 			const endAngle = startAngle + segmentAngle;
 
@@ -189,7 +75,7 @@
 			ctx.moveTo(centerX, centerY);
 			ctx.arc(centerX, centerY, radius, startAngle, endAngle);
 			ctx.closePath();
-			ctx.fillStyle = segment.color;
+			ctx.fillStyle = segment.color.hex;
 			ctx.fill();
 			// ctx.stroke();
 
@@ -250,7 +136,7 @@
 			gameState.rotation += spinSpeed * deltaTime;
 			spinSpeed *= spinDeceleration;
 
-			const segmentAngle = (2 * Math.PI) / wheelData.length;
+			const segmentAngle = (2 * Math.PI) / segments.length;
 			// Normalize rotation to 0 to 2π
 			// const normalizedRotation = ((rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
 			// Adjust for the top (pointer) being at -90 degrees (i.e., 3π/2 radians)
@@ -266,12 +152,12 @@
 					((gameState.rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
 				// Adjust for the top (pointer) being at -90 degrees (i.e., 3π/2 radians)
 				const adjustedAngle = (2 * Math.PI + Math.PI * 1.5 - normalizedRotation) % (2 * Math.PI);
-				const winningIndex = Math.floor(adjustedAngle / segmentAngle) % wheelData.length;
+				const winningIndex = Math.floor(adjustedAngle / segmentAngle) % segments.length;
 
 				// Store the normalized rotation
 				gameState.lastPosition = normalizedRotation;
-				console.log('Wheel landed on:', wheelData[winningIndex]);
-				gameState.winSegment = wheelData[winningIndex];
+				console.log('Wheel landed on:', segments[winningIndex]);
+				gameState.winSegment = segments[winningIndex];
 				gameState.move(+1);
 			}
 

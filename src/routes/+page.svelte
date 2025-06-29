@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { useQuery } from '@sanity/svelte-loader';
+	import { wheelQuery } from '$lib/queries';
 	import { getAudioState } from '$lib/states/audio.svelte';
 	import { getGameState } from '$lib/states/game.svelte';
 	import { GAME_STATES_ENUM } from '$lib/states/game.svelte';
@@ -8,6 +10,11 @@
 	import StateQuiz from '$lib/components/StateQuiz.svelte';
 	import StateResult from '$lib/components/StateResult.svelte';
 	import StateFinal from '$lib/components/StateFinal.svelte';
+
+	let { data } = $props();
+
+	let { initial } = data;
+	const query = useQuery<any>(wheelQuery, {}, { initial });
 
 	const audioState = getAudioState();
 	const gameState = getGameState();
@@ -48,7 +55,7 @@
 </script>
 
 {#if gameState.showWheel}
-	<StateWheel />
+	<StateWheel data={$query.data} />
 {:else if gameState.showForm}
 	<StateForm />
 {:else if gameState.showLanded}

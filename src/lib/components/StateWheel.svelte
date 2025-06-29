@@ -5,6 +5,8 @@
 	import Indicator from '$lib/components/Indicator.svelte';
 	import Wheel from '$lib/components/Wheel.svelte';
 
+	let { data } = $props();
+
 	const gameState = getGameState();
 </script>
 
@@ -27,7 +29,7 @@
 				<WheelBackgroundWithDots />
 			</div>
 			<div class="w-full">
-				<Wheel />
+				<Wheel segments={data.segments} />
 			</div>
 			<div
 				class="pointer-events-none absolute -top-[1.85rem] left-1/2 aspect-[1/0.91] w-[9.93rem] -translate-x-1/2"
