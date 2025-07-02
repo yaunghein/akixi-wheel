@@ -22,30 +22,11 @@
 	const handleOnline = () => {
 		gameState.isOnline = true;
 		toast.success('Back online!');
-		processStoredSubmissions();
 	};
 
 	const handleOffline = () => {
 		gameState.isOnline = false;
 		toast.error('Offline! Data will be saved locally.');
-	};
-
-	const processStoredSubmissions = () => {
-		const storedSubmissions = localStorage.getItem('userResults');
-		if (storedSubmissions) {
-			try {
-				const submissions = JSON.parse(storedSubmissions);
-				submissions.forEach((submission: any) => {
-					console.log('Processing stored submission:', submission);
-				});
-				// Clear stored submissions after processing
-				localStorage.removeItem('userResults');
-				toast.success('Successfully synced offline data!');
-			} catch (error) {
-				console.error('Error processing stored submissions:', error);
-				toast.error('Failed to process offline data');
-			}
-		}
 	};
 
 	onMount(() => {
@@ -66,8 +47,12 @@
 		window.addEventListener('online', handleOnline);
 		window.addEventListener('offline', handleOffline);
 
-		if (gameState.isOnline) {
-			processStoredSubmissions();
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.addEventListener('message', (event) => {
+				if (event.data?.type === 'sync-complete') {
+					toast.success('Offline results successfully synced!');
+				}
+			});
 		}
 
 		return () => {

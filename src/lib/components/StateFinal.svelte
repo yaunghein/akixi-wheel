@@ -5,40 +5,53 @@
 	import { scale } from 'svelte/transition';
 	import { toast } from '$lib/utils/toast';
 	import lottie from 'lottie-web';
+	import { IDB } from '$lib/db';
+
+	IDB.initialize();
 
 	const audioState = getAudioState();
 	const gameState = getGameState();
 
-	const handleUserResult = () => {
+	const handleUserResult = async () => {
 		const data = {
 			first_name: gameState.formInputs.first_name,
 			last_name: gameState.formInputs.last_name,
 			email: gameState.formInputs.email,
-			segment: gameState.winSegment ?? null,
+			segment: JSON.stringify(gameState.winSegment ?? null),
 			answer: gameState.selectedAnswer,
 			correct: gameState.isCorrect,
 			timestamp: new Date().toISOString()
 		};
 		if (gameState.isOnline) {
 			// For now, just log. Replace with API call if needed.
+			// fail yin IDB mhr pl save ya mhr pl
 			console.log('User result submitted:', data);
 			toast.success('Result saved successfully!');
 		} else {
-			// Save to localStorage for later processing
-			const storedResults = localStorage.getItem('userResults');
-			let results = [];
-			if (storedResults) {
-				try {
-					results = JSON.parse(storedResults);
-				} catch (e) {
-					console.error('Error parsing userResults:', e);
-					toast.error('Failed to save result offline');
-					return;
-				}
+			if ('serviceWorker' in navigator && 'SyncManager' in window && 'indexedDB' in window) {
+				console.log({ key: Date.now(), value: data });
+				await IDB.setByKey(Date.now(), data);
+				toast.success('[DB] data stored');
+				const registration = await navigator.serviceWorker.ready;
+				await (registration as any).sync.register('submissions');
+				toast.success('[SYNC] sync registered');
 			}
-			results.push(data);
-			localStorage.setItem('userResults', JSON.stringify(results));
-			toast.success('Result saved offline.');
+
+			// Save to localStorage for later processing
+			// const storedResults = localStorage.getItem('userResults');
+			// let results = [];
+			// if (storedResults) {
+			// 	try {
+			// 		results = JSON.parse(storedResults);
+			// 	} catch (e) {
+			// 		console.error('Error parsing userResults:', e);
+			// 		toast.error('Failed to save result offline');
+			// 		return;
+			// 	}
+			// }
+			// results.push(data);
+			// localStorage.setItem('userResults', JSON.stringify(results));
+			// toast.success('Result saved offline.');
 		}
 	};
 

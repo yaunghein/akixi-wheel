@@ -16,7 +16,9 @@
 	let lastTimestamp = $state(0);
 	let fontLoaded = $state(false);
 
-	onMount(() => {
+	function updateCanvasDimensions() {
+		if (!canvas) return;
+
 		ctx = canvas.getContext('2d')!;
 		// Set high resolution
 		const dpr = window.devicePixelRatio || 1;
@@ -24,6 +26,17 @@
 		canvas.width = rect.width * dpr;
 		canvas.height = rect.height * dpr;
 		ctx.scale(dpr, dpr);
+
+		// Redraw the wheel with new dimensions
+		drawWheel();
+	}
+
+	function handleResize() {
+		updateCanvasDimensions();
+	}
+
+	onMount(() => {
+		updateCanvasDimensions();
 
 		// Set initial rotation based on last position
 		const segmentAngle = (2 * Math.PI) / segments.length;
@@ -42,6 +55,14 @@
 				console.error('Font loading failed:', err);
 				drawWheel(); // Fallback to default font
 			});
+
+		// Add resize event listener
+		window.addEventListener('resize', handleResize);
+
+		// Cleanup function
+		return () => {
+			window.removeEventListener('resize', handleResize);
+		};
 	});
 
 	function drawWheel() {
@@ -168,6 +189,10 @@
 
 	function spinWheel() {
 		audioState.play('click');
+
+		gameState.move(+4);
+		gameState.winSegment = segments[0];
+		return;
 
 		if (gameState.current === GAME_STATES_ENUM.START) {
 			gameState.move(+1);

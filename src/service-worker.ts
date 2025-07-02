@@ -3,6 +3,8 @@
 /// <reference lib="esnext" />
 /// <reference lib="webworker" />
 
+import { IDB } from './lib/db';
+
 const sw = self as unknown as ServiceWorkerGlobalScope;
 
 /// <reference types="@sveltejs/kit" />
@@ -89,5 +91,42 @@ sw.addEventListener('fetch', (event) => {
 sw.addEventListener('message', (event) => {
 	if (event.data && event.data.type === 'SKIP_WAITING') {
 		sw.skipWaiting();
+	}
+});
+
+async function syncSubmissions() {
+	const keys = await IDB.getAllKeys();
+
+	for (const key of keys) {
+		const data = await IDB.getByKey(key);
+		// const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
+		//     method: 'POST',
+		//     body: JSON.stringify(data),
+		//     headers: {
+		//         'Content-type': 'application/json; charset=UTF-8',
+		//     },
+		// })
+
+		// const jsonData = await response.json()
+		console.log('[SUBMISSION]', data);
+
+		// removing the data from the `indexedDB` if data was sent successfully
+		await IDB.deletebyKey(key);
+		console.log('[DB] removed', key);
+	}
+
+	// Notify all open pages
+	const clientsList = await (self as any).clients.matchAll();
+	for (const client of clientsList) {
+		client.postMessage({
+			type: 'sync-complete'
+		});
+	}
+}
+
+sw.addEventListener('sync', function (event: any) {
+	console.log('[SYNC] event', event);
+	if (event.tag === 'submissions') {
+		event.waitUntil(syncSubmissions());
 	}
 });
