@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { bounceOut } from 'svelte/easing';
+	import scale from '$lib/transitions/scale';
 	import { getAudioState } from '$lib/states/audio.svelte';
 	import { getGameState, GAME_STATES_ENUM } from '$lib/states/game.svelte';
 
@@ -190,9 +192,9 @@
 	function spinWheel() {
 		audioState.play('click');
 
-		gameState.move(+4);
-		gameState.winSegment = segments[0];
-		return;
+		// gameState.move(+4);
+		// gameState.winSegment = segments[0];
+		// return;
 
 		if (gameState.current === GAME_STATES_ENUM.START) {
 			gameState.move(+1);
@@ -223,6 +225,7 @@
 <div class="relative mx-auto flex aspect-square w-full max-w-[90vw] items-center justify-center">
 	<canvas bind:this={canvas} class="block aspect-square h-full rounded-full"></canvas>
 	<button
+		in:scale={{ duration: 500, start: 1.2, easing: bounceOut }}
 		onmouseup={spinWheel}
 		class="font-apertura-black absolute top-1/2 left-1/2 flex aspect-square h-[19.55rem] -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-[1rem] border-[#23475F] bg-white text-[5.2rem] leading-none text-[#23475F] uppercase transition-all duration-300 active:scale-90 disabled:cursor-not-allowed"
 		disabled={isSpinning}

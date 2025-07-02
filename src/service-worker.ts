@@ -94,25 +94,39 @@ sw.addEventListener('message', (event) => {
 	}
 });
 
+const submit = async (data: any) => {
+	const response = await fetch('/api/submit', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(data)
+	});
+	console.log('[SUBMIT] response', response);
+
+	if (!response.ok) {
+		throw new Error('Failed to submit');
+	}
+
+	return response.json();
+};
+
 async function syncSubmissions() {
+	console.log('[SYNC] syncSubmissions');
 	const keys = await IDB.getAllKeys();
 
 	for (const key of keys) {
+		console.log('[SYNC] key', key);
 		const data = await IDB.getByKey(key);
-		// const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
-		//     method: 'POST',
-		//     body: JSON.stringify(data),
-		//     headers: {
-		//         'Content-type': 'application/json; charset=UTF-8',
-		//     },
-		// })
+		const datax = await submit({
+			_type: 'submission',
+			...data
+		});
+		console.log('[SUBMIT] datax', datax);
 
-		// const jsonData = await response.json()
-		console.log('[SUBMISSION]', data);
-
-		// removing the data from the `indexedDB` if data was sent successfully
-		await IDB.deletebyKey(key);
-		console.log('[DB] removed', key);
+		if (datax.success) {
+			await IDB.deletebyKey(key);
+			console.log('[DB] removed', key);
+			console.log('[SUBMISSION]', datax);
+		}
 	}
 
 	// Notify all open pages
