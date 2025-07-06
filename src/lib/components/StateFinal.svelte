@@ -17,16 +17,37 @@
 			first_name: gameState.formInputs.first_name,
 			last_name: gameState.formInputs.last_name,
 			email: gameState.formInputs.email,
-			segment: JSON.stringify(gameState.winSegment ?? null),
+			segment: {
+				_type: 'reference',
+				_ref: gameState.winSegment?._id
+			},
 			answer: gameState.selectedAnswer,
 			correct: gameState.isCorrect,
 			timestamp: new Date().toISOString()
 		};
+		console.log('data', data);
 		if (gameState.isOnline) {
-			// For now, just log. Replace with API call if needed.
-			// fail yin IDB mhr pl save ya mhr pl
-			console.log('User result submitted:', data);
-			toast.success('Result saved successfully!');
+			try {
+				const response = await fetch('/api/submit', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						_type: 'submission',
+						...data
+					})
+				});
+
+				if (response.ok) {
+					const result = await response.json();
+					console.log('User result submitted:', result);
+					toast.success('Result saved successfully!');
+				} else {
+					throw new Error('Failed to submit');
+				}
+			} catch (error) {
+				console.error('Failed to submit online:', error);
+				toast.error('Failed to save result');
+			}
 		} else {
 			if ('serviceWorker' in navigator && 'SyncManager' in window && 'indexedDB' in window) {
 				console.log({ key: Date.now(), value: data });

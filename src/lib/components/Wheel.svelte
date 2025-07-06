@@ -181,6 +181,7 @@
 				gameState.lastPosition = normalizedRotation;
 				console.log('Wheel landed on:', segments[winningIndex]);
 				gameState.winSegment = segments[winningIndex];
+				console.log('gameState.winSegment', gameState.winSegment);
 				gameState.move(+1);
 			}
 

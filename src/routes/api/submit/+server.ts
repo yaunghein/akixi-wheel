@@ -11,7 +11,8 @@ export async function POST({ request }) {
 		email: data.email || 'yaunghein@gmail.com',
 		answer: data.answer || 'test',
 		correct: data.correct || true,
-		timestamp: data.timestamp || new Date()
+		timestamp: data.timestamp || new Date(),
+		segment: data.segment
 	};
 
 	try {

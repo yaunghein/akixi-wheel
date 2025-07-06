@@ -23,11 +23,13 @@ export const submissionType = defineType({
       type: 'string',
       validation: (Rule) => Rule.required().email(),
     }),
-    // defineField({
-    //   name: 'segment',
-    //   title: 'Segment (JSON)',
-    //   type: 'json', // this is enabled by the plugin
-    // }),
+    defineField({
+      name: 'segment',
+      title: 'Segment',
+      type: 'reference',
+      to: [{type: 'segment'}],
+      validation: (Rule) => Rule.required(),
+    }),
     defineField({
       name: 'answer',
       title: 'Answer',

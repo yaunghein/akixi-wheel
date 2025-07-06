@@ -68,6 +68,7 @@ export type TQuizQuestion = {
 };
 
 export type TWheelSegment = {
+	_id: string;
 	text: string;
 	color: string;
 	question: TQuizQuestion;
