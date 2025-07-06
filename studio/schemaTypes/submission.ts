@@ -9,19 +9,21 @@ export const submissionType = defineType({
       name: 'first_name',
       title: 'First Name',
       type: 'string',
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'last_name',
       title: 'Last Name',
       type: 'string',
-      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'email',
       title: 'Email',
       type: 'string',
-      validation: (Rule) => Rule.required().email(),
+    }),
+    defineField({
+      name: 'stay_in_touch',
+      title: 'Stay in Touch',
+      type: 'boolean',
     }),
     defineField({
       name: 'segment',
@@ -34,11 +36,13 @@ export const submissionType = defineType({
       name: 'answer',
       title: 'Answer',
       type: 'string',
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'correct',
       title: 'Correct',
       type: 'boolean',
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'timestamp',

@@ -23,7 +23,8 @@
 			},
 			answer: gameState.selectedAnswer,
 			correct: gameState.isCorrect,
-			timestamp: new Date().toISOString()
+			timestamp: new Date().toISOString(),
+			stay_in_touch: gameState.formInputs.stay_in_touch
 		};
 		console.log('data', data);
 		if (gameState.isOnline) {

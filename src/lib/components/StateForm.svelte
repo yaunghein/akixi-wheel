@@ -93,8 +93,8 @@
 	};
 
 	const handleCheckboxChange = (event: Event) => {
-		const checkbox = event.target as HTMLInputElement;
-		gameState.formInputs.stay_in_touch = checkbox.checked;
+		// const checkbox = event.target as HTMLInputElement;
+		// gameState.formInputs.stay_in_touch = checkbox.checked;
 		audioState.play('click');
 		keyboardVisible = false;
 	};
@@ -177,6 +177,7 @@
 				onmouseup={handleCheckboxChange}
 				type="checkbox"
 				name="terms"
+				bind:checked={gameState.formInputs.stay_in_touch}
 				class="checked:bg-vivid-sky checked:text-vivid-sky h-[4.12rem] w-[4.12rem] !appearance-none rounded-[0.75rem] border-2 border-none bg-[#D9D9D9]"
 			/>
 		</label>
@@ -200,6 +201,7 @@
 						if (!validateForm()) {
 							return;
 						}
+						console.log('form inputs', gameState.formInputs);
 						gameState.current = GAME_STATES_ENUM.SPIN;
 					}}
 					class="font-apertura-black bg-vivid-sky cursor-pointer rounded-[2.29rem] px-48 py-12 text-[6.11rem] leading-none text-[#23475F] transition-transform active:scale-90"

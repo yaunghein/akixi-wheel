@@ -6,7 +6,6 @@
 	import Wheel from '$lib/components/Wheel.svelte';
 
 	let { data } = $props();
-	console.log(data);
 
 	const gameState = getGameState();
 </script>
