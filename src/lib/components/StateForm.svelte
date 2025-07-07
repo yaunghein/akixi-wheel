@@ -2,6 +2,7 @@
 	import { getAudioState } from '$lib/states/audio.svelte';
 	import { GAME_STATES_ENUM, getGameState, type TFormField } from '$lib/states/game.svelte';
 	import TextSpinAndWin from '$lib/components/TextSpinAndWin.svelte';
+	import PrivacyPolicy from '$lib/components/PrivacyPolicy.svelte';
 	import { scale } from 'svelte/transition';
 	import { bounceOut } from 'svelte/easing';
 	import Keyboard from 'svelte-keyboard';
@@ -181,11 +182,7 @@
 				class="checked:bg-vivid-sky checked:text-vivid-sky h-[4.12rem] w-[4.12rem] !appearance-none rounded-[0.75rem] border-2 border-none bg-[#D9D9D9]"
 			/>
 		</label>
-		<button
-			class="text-aquamarineo font-apertura-medium mt-10 inline-block text-left text-[3.36rem] leading-none underline"
-		>
-			Privacy Policy
-		</button>
+		<PrivacyPolicy />
 		{#if errorMessage}
 			<div class="mt-10">
 				<p class="font-apertura-black text-tomato text-[3.36rem]">{errorMessage}</p>
