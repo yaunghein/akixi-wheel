@@ -45,16 +45,19 @@
 		<div
 			in:scale={{ duration: 500, start: 1.05, easing: bounceOut }}
 			out:scale={{ duration: 300, start: 1.05 }}
-			class="bg-electric-indigo shadow-box relative mx-auto w-full max-w-[73.5rem] rounded-[2.29rem] p-20 text-[3.36rem]"
+			class="bg-electric-indigo shadow-box relative mx-auto w-full max-w-[73.5rem] rounded-[2.29rem] p-10 text-[3.36rem]"
 		>
 			<div class="h-[50vh] w-full overflow-hidden rounded-3xl">
-				<embed
-					src="https://akixi-wheel.vercel.app/privacy-policy.pdf#toolbar=0"
-					width="100%"
-					height="100%"
-					type="application/pdf"
-					class="h-full w-full"
-				/>
+				<div class="h-full w-full scale-[1.05]">
+					<iframe
+						src="https://akixi-wheel.vercel.app/privacy-policy.pdf#toolbar=0"
+						width="100%"
+						height="100%"
+						class="h-full w-full"
+						style="border: none;"
+						title="Privacy Policy"
+					></iframe>
+				</div>
 			</div>
 		</div>
 	</div>
