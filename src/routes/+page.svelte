@@ -27,7 +27,7 @@
 				audioState.play('landed');
 				break;
 			case GAME_STATES_ENUM.QUIZ:
-				audioState.play('question');
+				audioState.play('question', { loop: true });
 				break;
 			case GAME_STATES_ENUM.RESULT:
 				gameState.isCorrect ? audioState.play('right') : audioState.play('wrong');

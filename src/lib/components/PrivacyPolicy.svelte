@@ -28,7 +28,7 @@
 		audioState.play('click');
 		showPrivacyPolicyPopup = !showPrivacyPolicyPopup;
 	}}
-	class="text-aquamarineo font-apertura-medium mt-10 inline-block text-left text-[3.36rem] leading-none underline"
+	class="text-aquamarineo font-apertura-medium mt-10 inline-block self-start text-left text-[3.36rem] leading-none underline"
 >
 	Privacy Policy
 </button>

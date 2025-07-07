@@ -28,7 +28,7 @@
 				<div class="flex items-center gap-16">
 					<span
 						class="font-apertura-black text-shadow-small text-[12.98rem] leading-none"
-						style="color: {i === 0 ? '#22f4ad' : i === 1 ? '#4450ff' : '#1cd2fa'}"
+						style="color: {i === 0 ? '#22f4ad' : i === 1 ? '#eeeeee' : '#1cd2fa'}"
 					>
 						{String.fromCharCode(65 + i)}
 					</span>
