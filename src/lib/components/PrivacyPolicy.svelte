@@ -5,7 +5,7 @@
 
 	const audioState = getAudioState();
 
-	let showPrivacyPolicyPopup = $state(true);
+	let showPrivacyPolicyPopup = $state(false);
 
 	const handlePopupClick = (event: MouseEvent) => {
 		const target = event.target as HTMLElement;
@@ -47,7 +47,15 @@
 			out:scale={{ duration: 300, start: 1.05 }}
 			class="bg-electric-indigo shadow-box relative mx-auto w-full max-w-[73.5rem] rounded-[2.29rem] p-20 text-[3.36rem]"
 		>
-			<embed src="/privacy-policy.pdf" width="100%" height="500px" type="application/pdf" />
+			<div class="h-[50vh] w-full overflow-hidden rounded-3xl">
+				<embed
+					src="https://akixi-wheel.vercel.app/privacy-policy.pdf#toolbar=0"
+					width="100%"
+					height="100%"
+					type="application/pdf"
+					class="h-full w-full"
+				/>
+			</div>
 		</div>
 	</div>
 {/if}
