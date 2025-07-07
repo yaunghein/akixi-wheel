@@ -75,4 +75,27 @@ body {
 
 	--shadow-form-input: inset 0 10px 10px 0 rgba(0, 0, 0, 0.25);
 	--shadow-box: 0 5px 7px #00000089, 0 -1px 5px #00000050;
+
+	--animate-bounce: bounce 3.6s ease-in-out infinite;
+	@keyframes bounce {
+		0%,
+		8%,
+		16%,
+		24%,
+		100% {
+			transform: scale(1);
+		}
+		2%,
+		4% {
+			transform: scale(1.1);
+		}
+		10%,
+		12% {
+			transform: scale(1.05);
+		}
+		18%,
+		20% {
+			transform: scale(1.02);
+		}
+	}
 }

@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { bounceOut } from 'svelte/easing';
-	import scale from '$lib/transitions/scale';
 	import { getAudioState } from '$lib/states/audio.svelte';
 	import { getGameState, GAME_STATES_ENUM } from '$lib/states/game.svelte';
 
@@ -17,6 +15,7 @@
 	let spinDeceleration = $state(0.99);
 	let lastTimestamp = $state(0);
 	let fontLoaded = $state(false);
+	let buttonElement: HTMLButtonElement;
 
 	function updateCanvasDimensions() {
 		if (!canvas) return;
@@ -170,6 +169,8 @@
 				isSpinning = false;
 				audioState.pause('spin');
 				spinSpeed = 0;
+				// Re-add animate-bounce class when spinning stops
+				buttonElement?.classList.add('animate-bounce');
 				// Normalize rotation to 0 to 2π
 				const normalizedRotation =
 					((gameState.rotation % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
@@ -202,6 +203,8 @@
 
 		if (!isSpinning) {
 			isSpinning = true;
+			// Remove animate-bounce class when spinning starts
+			buttonElement?.classList.remove('animate-bounce');
 			audioState.play('spin', { loop: true });
 			// spinningSound.addEventListener('timeupdate', () => {
 			// 	if (spinningSound.currentTime > 1.5) {
@@ -224,9 +227,9 @@
 <div class="relative mx-auto flex aspect-square w-full max-w-[90vw] items-center justify-center">
 	<canvas bind:this={canvas} class="block aspect-square h-full rounded-full"></canvas>
 	<button
-		in:scale={{ duration: 500, start: 1.2, easing: bounceOut }}
+		bind:this={buttonElement}
 		onmouseup={spinWheel}
-		class="font-apertura-black absolute top-1/2 left-1/2 flex aspect-square h-[19.55rem] -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-[1rem] border-[#23475F] bg-white text-[5.2rem] leading-none text-[#23475F] uppercase transition-all duration-300 active:scale-90 disabled:cursor-not-allowed"
+		class="font-apertura-black absolute top-1/2 left-1/2 flex aspect-square h-[19.55rem] -translate-x-1/2 -translate-y-1/2 animate-bounce cursor-pointer items-center justify-center rounded-full border-[1rem] border-[#23475F] bg-white text-[5.2rem] leading-none text-[#23475F] uppercase transition-all duration-300 active:scale-90 disabled:cursor-not-allowed"
 		disabled={isSpinning}
 	>
 		<span class="translate-y-3 whitespace-nowrap">
