@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import { fade, scale } from 'svelte/transition';
 	import { bounceOut } from 'svelte/easing';
 	import { getAudioState } from '$lib/states/audio.svelte';
@@ -50,7 +51,7 @@
 			<div class="h-[50vh] w-full overflow-hidden rounded-3xl">
 				<div class="h-full w-full scale-[1.05]">
 					<iframe
-						src="https://akixi-wheel.vercel.app/privacy-policy.pdf#toolbar=0"
+						src={`${page.url.origin}/privacy-policy.pdf`}
 						width="100%"
 						height="100%"
 						class="h-full w-full"
