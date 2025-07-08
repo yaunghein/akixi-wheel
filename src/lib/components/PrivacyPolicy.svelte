@@ -48,17 +48,14 @@
 			out:scale={{ duration: 300, start: 1.05 }}
 			class="bg-electric-indigo shadow-box relative mx-auto w-full max-w-[73.5rem] rounded-[2.29rem] p-10 text-[3.36rem]"
 		>
-			<div class="h-[50vh] w-full overflow-hidden rounded-3xl">
-				<div class="h-full w-full scale-[1.05]">
-					<iframe
-						src="https://akixi-wheel.vercel.app/privacy-policy.pdf#toolbar=0"
-						width="100%"
-						height="100%"
-						class="h-full w-full"
-						style="border: none;"
-						title="Privacy Policy"
-					></iframe>
-				</div>
+			<div class="hide-scrollbar h-[50vh] w-full overflow-hidden overflow-y-scroll rounded-3xl">
+				{#each Array.from({ length: 15 }) as _, index}
+					<img
+						src={`/privacy-policy/pp-${index + 1}.webp`}
+						alt="Privacy Policy"
+						class="-mt-[1px] aspect-[1/0.71] w-full object-contain"
+					/>
+				{/each}
 			</div>
 		</div>
 	</div>
