@@ -29,6 +29,7 @@ class GameState {
 	formInputs = $state<TFormInputs>(initialFormInputs);
 	selectedAnswer = $state<'A' | 'B' | 'C' | null>(null);
 	isCorrect = $state(false);
+	confettiVideo = $state<HTMLVideoElement | null>(null);
 
 	// should have use enum above, but this is more beautiful 😂
 	showBackButton = $derived(this.is('form', 'spin', 'landed'));

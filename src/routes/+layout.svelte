@@ -55,6 +55,10 @@
 			});
 		}
 
+		document.addEventListener('contextmenu', (e) => {
+			e.preventDefault();
+		});
+
 		return () => {
 			window.removeEventListener('online', handleOnline);
 			window.removeEventListener('offline', handleOffline);

@@ -36,16 +36,20 @@
 			case GAME_STATES_ENUM.FINAL:
 				if (gameState.isCorrect) {
 					audioState.play('congratulations');
-					// @ts-expect-error: no types for canvas-confetti
-					import('canvas-confetti').then((module) => {
-						const confetti = module.default;
-						confetti({
-							particleCount: 120,
-							spread: 90,
-							origin: { y: 0.6 },
-							colors: ['#2fffa3', '#2fd6ff', '#3b82f6', '#fff']
-						});
-					});
+					// @tss-expect-error: no types for canvas-confetti
+					// import('canvas-confetti').then((module) => {
+					// 	const confetti = module.default;
+					// 	confetti({
+					// 		particleCount: 120,
+					// 		spread: 90,
+					// 		origin: { y: 0.6 },
+					// 		colors: ['#2fffa3', '#2fd6ff', '#3b82f6', '#fff']
+					// 	});
+					// });
+					if (gameState.confettiVideo) {
+						gameState.confettiVideo.style.opacity = '1';
+						gameState.confettiVideo.play();
+					}
 				} else {
 					audioState.play('hardluck');
 				}

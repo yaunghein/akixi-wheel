@@ -58,27 +58,11 @@
 				await (registration as any).sync.register('submissions');
 				toast.success('[SYNC] sync registered');
 			}
-
-			// Save to localStorage for later processing
-			// const storedResults = localStorage.getItem('userResults');
-			// let results = [];
-			// if (storedResults) {
-			// 	try {
-			// 		results = JSON.parse(storedResults);
-			// 	} catch (e) {
-			// 		console.error('Error parsing userResults:', e);
-			// 		toast.error('Failed to save result offline');
-			// 		return;
-			// 	}
-			// }
-			// results.push(data);
-			// localStorage.setItem('userResults', JSON.stringify(results));
-			// toast.success('Result saved offline.');
 		}
 	};
 
 	const lottiePlayer = (node: HTMLDivElement, path: string) => {
-		const player = lottie.loadAnimation({
+		lottie.loadAnimation({
 			container: node,
 			renderer: 'svg',
 			loop: true,
@@ -90,6 +74,16 @@
 
 {#if gameState.isCorrect}
 	<div class="relative my-auto text-center leading-none">
+		<video
+			bind:this={gameState.confettiVideo}
+			muted
+			playsinline
+			class="fixed inset-0 h-full w-full object-cover opacity-0 mix-blend-color-dodge"
+		>
+			<source src="/videos/confetti.mp4" type="video/mp4" />
+			<track kind="captions" />
+		</video>
+
 		<div class="font-apertura-black text-aquamarineo text-shadow-small text-[10.08rem]">
 			Congratulations!
 		</div>
