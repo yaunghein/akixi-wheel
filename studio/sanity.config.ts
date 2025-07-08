@@ -1,6 +1,5 @@
 import {defineConfig} from 'sanity'
 import {colorInput} from '@sanity/color-input'
-// import {jsonInput} from 'sanity-plugin-json-input'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {schemaTypes} from './schemaTypes'
