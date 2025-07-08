@@ -7,6 +7,8 @@
 	import lottie from 'lottie-web';
 	import { IDB } from '$lib/db';
 
+	let { data: wheel } = $props();
+
 	IDB.initialize();
 
 	const audioState = getAudioState();
@@ -14,6 +16,10 @@
 
 	const handleUserResult = async () => {
 		const data = {
+			event: {
+				_type: 'reference',
+				_ref: wheel._id
+			},
 			first_name: gameState.formInputs.first_name,
 			last_name: gameState.formInputs.last_name,
 			email: gameState.formInputs.email,
@@ -26,7 +32,6 @@
 			timestamp: new Date().toISOString(),
 			stay_in_touch: gameState.formInputs.stay_in_touch
 		};
-		console.log('data', data);
 		if (gameState.isOnline) {
 			try {
 				const response = await fetch('/api/submit', {
@@ -51,7 +56,6 @@
 			}
 		} else {
 			if ('serviceWorker' in navigator && 'SyncManager' in window && 'indexedDB' in window) {
-				console.log({ key: Date.now(), value: data });
 				await IDB.setByKey(Date.now(), data);
 				toast.success('[DB] data stored');
 				const registration = await navigator.serviceWorker.ready;

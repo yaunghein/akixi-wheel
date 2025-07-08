@@ -6,6 +6,13 @@ export const submissionType = defineType({
   type: 'document',
   fields: [
     defineField({
+      name: 'event',
+      title: 'Event',
+      type: 'reference',
+      to: [{type: 'wheel'}],
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
       name: 'first_name',
       title: 'First Name',
       type: 'string',

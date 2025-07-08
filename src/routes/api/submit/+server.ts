@@ -3,7 +3,6 @@ import { editorClient as client } from '$lib/server/sanity';
 
 export async function POST({ request }) {
 	const data = await request.json();
-	console.log('[SUBMIT] request', data);
 	// TODO: remove default values, maybe pass data directly
 	const document = {
 		_type: data._type,
@@ -14,7 +13,8 @@ export async function POST({ request }) {
 		correct: data.correct || true,
 		timestamp: data.timestamp || new Date(),
 		segment: data.segment,
-		stay_in_touch: data.stay_in_touch
+		stay_in_touch: data.stay_in_touch,
+		event: data.event
 	};
 
 	try {

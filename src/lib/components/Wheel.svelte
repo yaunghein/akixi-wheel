@@ -192,9 +192,9 @@
 	function spinWheel() {
 		audioState.play('click');
 
-		// gameState.move(+4);
-		// gameState.winSegment = segments[0];
-		// return;
+		gameState.move(+4);
+		gameState.winSegment = segments[0];
+		return;
 
 		if (gameState.current === GAME_STATES_ENUM.START) {
 			gameState.move(+1);

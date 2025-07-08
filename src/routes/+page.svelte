@@ -84,7 +84,7 @@
 		{:else if gameState.showResult}
 			<StateResult />
 		{:else if gameState.showFinal}
-			<StateFinal />
+			<StateFinal data={$query.data} />
 		{/if}
 	</div>
 

@@ -45,7 +45,6 @@ export const IDB = {
 				const db = oRequest.result;
 				const tx = db.transaction(STORE_NAME, 'readwrite');
 				const st = tx.objectStore(STORE_NAME);
-				console.log({ value, key });
 				const sRequest = st.put(value, key);
 				sRequest.onsuccess = function () {
 					resolve();
