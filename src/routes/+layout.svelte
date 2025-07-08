@@ -66,7 +66,7 @@
 	class="bg-electric-indigo flex min-h-screen items-center justify-center overflow-hidden text-white transition-colors duration-500"
 >
 	<video autoplay muted loop playsinline class="absolute inset-0 h-full w-full object-cover">
-		<source src="/videos/background-2k-2.mp4" type="video/mp4" />
+		<source src="/videos/background-2k-slow.mp4" type="video/mp4" />
 		<track kind="captions" />
 	</video>
 	<div class="relative flex aspect-[4/7] w-full flex-col overflow-hidden pt-[13rem]">
