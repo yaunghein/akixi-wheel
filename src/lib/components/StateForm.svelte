@@ -51,7 +51,11 @@
 			toast.error('Last name is required');
 			return false;
 		}
-		if (gameState.formInputs.email.trim() && !validateEmail(gameState.formInputs.email)) {
+		if (!gameState.formInputs.email.trim()) {
+			toast.error('Email address is required');
+			return false;
+		}
+		if (!validateEmail(gameState.formInputs.email)) {
 			toast.error('Please enter a valid email address');
 			return false;
 		}
