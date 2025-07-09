@@ -12,9 +12,15 @@
 
 <div class="relative flex h-full flex-col items-center text-center">
 	<div class="mt-[7.5rem] mb-24 max-w-[65rem] text-[5.34rem] leading-none">
-		Turn Your CX's Blind Spots into your Revenue
+		{data.tagline}
 	</div>
-	<TextSpinAndWin />
+	<!-- <TextSpinAndWin /> -->
+	<img
+		src={data.headerImage.url}
+		alt=""
+		class="relative mx-auto -mb-16 w-[73.5rem] drop-shadow-2xl"
+		style="aspect-ratio: {data.headerImage.ratio}/1"
+	/>
 	<div class="my-auto w-full">
 		<div class="relative p-[0.65rem] sm:p-[2rem]">
 			<img

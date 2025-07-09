@@ -18,6 +18,25 @@ export const eventType = defineType({
       initialValue: false,
     }),
     defineField({
+      name: 'logo',
+      title: 'Logo',
+      type: 'image',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'tagline',
+      title: 'Tagline',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'headerImage',
+      title: 'Header Image',
+      description: 'Please include drop shadow effect in the image.',
+      type: 'image',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
       name: 'segments',
       title: 'Segments',
       type: 'array',
@@ -28,6 +47,13 @@ export const eventType = defineType({
         },
       ],
       validation: (Rule) => Rule.required().min(7).max(7).error('Exactly 7 segments required'),
+    }),
+    defineField({
+      name: 'bgVideo',
+      title: 'Background Video',
+      description: 'Recommend to use a 2k and bluish video.',
+      type: 'file',
+      validation: (Rule) => Rule.required(),
     }),
   ],
 })

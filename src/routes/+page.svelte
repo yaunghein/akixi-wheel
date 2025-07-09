@@ -65,13 +65,16 @@
 	class="bg-electric-indigo flex min-h-screen items-center justify-center overflow-hidden text-white transition-colors duration-500"
 >
 	<video autoplay muted loop playsinline class="absolute inset-0 h-full w-full object-cover">
-		<source src="/videos/background-2k-slow.mp4" type="video/mp4" />
+		<source src={$query.data.bgVideo.url} type="video/mp4" />
 		<track kind="captions" />
 	</video>
 	<div class="relative flex aspect-[4/7] w-full flex-col overflow-hidden pt-[13rem]">
-		<div class="relative mx-auto mb-auto aspect-[1/0.27] w-[40.5rem]">
-			<Logo />
-		</div>
+		<img
+			src={$query.data.logo.url}
+			alt=""
+			class="relative mx-auto mb-auto w-[40.5rem]"
+			style="aspect-ratio: {$query.data.logo.ratio}/1"
+		/>
 
 		{#if gameState.showWheel}
 			<StateWheel data={$query.data} />
