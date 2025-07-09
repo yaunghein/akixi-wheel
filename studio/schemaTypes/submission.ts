@@ -9,7 +9,7 @@ export const submissionType = defineType({
       name: 'event',
       title: 'Event',
       type: 'reference',
-      to: [{type: 'wheel'}],
+      to: [{type: 'event'}],
       validation: (Rule) => Rule.required(),
     }),
     defineField({

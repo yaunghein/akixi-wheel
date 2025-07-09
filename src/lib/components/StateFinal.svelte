@@ -7,7 +7,7 @@
 	import lottie from 'lottie-web';
 	import { IDB } from '$lib/db';
 
-	let { data: wheel } = $props();
+	let { data: event } = $props();
 
 	IDB.initialize();
 
@@ -18,7 +18,7 @@
 		const data = {
 			event: {
 				_type: 'reference',
-				_ref: wheel._id
+				_ref: event._id
 			},
 			first_name: gameState.formInputs.first_name,
 			last_name: gameState.formInputs.last_name,

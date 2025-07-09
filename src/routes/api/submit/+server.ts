@@ -6,11 +6,11 @@ export async function POST({ request }) {
 	// TODO: remove default values, maybe pass data directly
 	const document = {
 		_type: data._type,
-		first_name: data.first_name || 'Yaung',
-		last_name: data.last_name || 'Hein',
+		first_name: data.first_name,
+		last_name: data.last_name,
 		email: data.email,
-		answer: data.answer || 'test',
-		correct: data.correct || true,
+		answer: data.answer,
+		correct: data.correct,
 		timestamp: data.timestamp || new Date(),
 		segment: data.segment,
 		stay_in_touch: data.stay_in_touch,

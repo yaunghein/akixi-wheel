@@ -1,5 +1,5 @@
-import {wheelType} from './wheel'
+import {eventType} from './event'
 import {submissionType} from './submission'
 import {segmentType} from './segment'
 
-export const schemaTypes = [segmentType, wheelType, submissionType]
+export const schemaTypes = [segmentType, eventType, submissionType]

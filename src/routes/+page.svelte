@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { useQuery } from '@sanity/svelte-loader';
-	import { wheelQuery } from '$lib/queries';
+	import { eventQuery } from '$lib/queries';
 	import { getAudioState } from '$lib/states/audio.svelte';
 	import { getGameState } from '$lib/states/game.svelte';
 	import { GAME_STATES_ENUM } from '$lib/states/game.svelte';
@@ -17,7 +17,7 @@
 	let { data } = $props();
 
 	let { initial } = data;
-	const query = useQuery<any>(wheelQuery, {}, { initial });
+	const query = useQuery<any>(eventQuery, {}, { initial });
 
 	const audioState = getAudioState();
 	const gameState = getGameState();

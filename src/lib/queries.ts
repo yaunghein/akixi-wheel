@@ -1,4 +1,4 @@
-export const wheelQuery = `*[_type == "wheel" && active == true][0]{
+export const eventQuery = `*[_type == "event" && active == true][0]{
   ...,
   segments[]->{
     ...
