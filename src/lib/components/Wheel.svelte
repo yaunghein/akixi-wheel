@@ -12,7 +12,7 @@
 	let ctx: CanvasRenderingContext2D;
 	let isSpinning = $state(false);
 	let spinSpeed = $state(0);
-	let spinDeceleration = $state(0.99);
+	let spinDeceleration = $state(0.25);
 	let lastTimestamp = $state(0);
 	let fontLoaded = $state(false);
 	let buttonElement: HTMLButtonElement;
@@ -156,7 +156,10 @@
 
 		if (isSpinning) {
 			gameState.rotation += spinSpeed * deltaTime;
-			spinSpeed *= spinDeceleration;
+
+			// Time-based deceleration instead of frame-based
+			const deltaTimeSeconds = deltaTime / 1000;
+			spinSpeed *= Math.pow(spinDeceleration, deltaTimeSeconds);
 
 			const segmentAngle = (2 * Math.PI) / segments.length;
 			// Normalize rotation to 0 to 2π
@@ -192,7 +195,7 @@
 	function spinWheel() {
 		audioState.play('click');
 
-		// gameState.move(+4);
+		// gameState.move(+2);
 		// gameState.winSegment = segments[0];
 		// return;
 

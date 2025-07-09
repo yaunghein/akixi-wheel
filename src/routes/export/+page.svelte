@@ -5,7 +5,7 @@
 	import { client } from '$lib/utils/sanity';
 	import { slugify } from '$lib/utils/slugify';
 
-	let { data } = $props<{ events: any[]; submissions: any[] }>();
+	let { data } = $props();
 	let currentEvent = $state<string>(data.events[0]._id);
 	let submissions = $state<any[]>([]);
 
@@ -30,7 +30,6 @@
 		const currentEventName =
 			data.events.find((e: any) => e._id === currentEvent)?.name || 'submissions';
 		const slugifiedEventName = slugify(currentEventName);
-		const filename = `${slugifiedEventName}_submissions.csv`;
 
 		// Create CSV content
 		const headers = ['First Name', 'Last Name', 'Email'];
@@ -46,17 +45,11 @@
 		const link = document.createElement('a');
 		const url = URL.createObjectURL(blob);
 		link.setAttribute('href', url);
-		link.setAttribute('download', filename);
+		link.setAttribute('download', `${slugifiedEventName}-submissions.csv`);
 		link.style.visibility = 'hidden';
 		document.body.appendChild(link);
 		link.click();
 		document.body.removeChild(link);
-
-		// Clean up the URL object
-		URL.revokeObjectURL(url);
-
-		// Show success message
-		toast.success(`Exported ${filename}`);
 	}
 
 	// const bulkDelete: SubmitFunction = ({ formElement, formData, action, cancel, submitter }) => {
@@ -76,7 +69,7 @@
 				name="event"
 				id="event"
 				bind:value={currentEvent}
-				class="font-apertura-medium w-full rounded-lg border border-gray-300 bg-white px-4 py-2 pt-[0.65rem] text-black focus:ring-1 focus:ring-gray-500 focus:outline-none"
+				class="font-apertura-medium w-full cursor-pointer rounded-lg border border-gray-300 bg-white px-4 py-2 pt-[0.65rem] text-black focus:ring-1 focus:ring-gray-500 focus:outline-none"
 			>
 				{#each data.events as event}
 					<option value={event._id} class="bg-white text-black">
@@ -87,6 +80,17 @@
 			</select>
 		</div>
 
+		<div>
+			<div class="mb-4 text-center">
+				<button
+					onclick={() => exportToCSV()}
+					class="font-apertura-medium cursor-pointer rounded-lg bg-black px-4 py-2 text-sm text-white transition-colors hover:bg-gray-800"
+				>
+					Export CSV
+				</button>
+			</div>
+		</div>
+
 		<!-- Submissions Table -->
 		<div class="rounded-lg border border-gray-200 bg-white p-4">
 			{#if formattedSubmissions.length === 0}
@@ -95,14 +99,7 @@
 				</div>
 			{:else}
 				<!-- Export Button -->
-				<div class="mb-4 text-center">
-					<button
-						onclick={() => exportToCSV()}
-						class="font-apertura-medium cursor-pointer rounded-lg bg-black px-4 py-2 text-sm text-white transition-colors hover:bg-gray-800"
-					>
-						Export CSV
-					</button>
-				</div>
+
 				<div class="overflow-x-auto">
 					<table class="w-full">
 						<thead>
