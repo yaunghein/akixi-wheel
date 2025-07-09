@@ -10,9 +10,11 @@
 	let submissions = $state<any[]>([]);
 
 	$effect(() => {
-		client.fetch(`*[_type == "submission" && event._ref == "${currentEvent}"]`).then((d) => {
-			submissions = d;
-		});
+		client
+			.fetch(`*[_type == "submission" && event._ref == "${currentEvent}"] | order(_createdAt desc)`)
+			.then((d) => {
+				submissions = d;
+			});
 	});
 
 	const formattedSubmissions = $derived(

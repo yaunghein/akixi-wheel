@@ -19,11 +19,7 @@ body {
 }
 
 .toaster .message {
-	@apply !translate-y-[0.4rem] !text-[3.36rem];
-}
-
-.toaster .base * {
-	@apply shrink-0 !text-[3.36rem] !text-white;
+	@apply !translate-y-[0.4rem] !text-[3.36rem] !break-words !text-white sm:!translate-y-[0.15rem] sm:!text-[1.5rem];
 }
 
 .toaster .base {
