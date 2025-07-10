@@ -108,7 +108,7 @@
 				gameState.selectedAnswer = null;
 				gameState.isCorrect = false;
 				gameState.winSegment = null;
-				gameState.current = GAME_STATES_ENUM.START;
+				gameState.current = gameState.startState;
 			}}
 			class="font-apertura-black bg-vivid-sky cursor-pointer rounded-[2.29rem] px-48 py-12 text-[6.11rem] leading-none text-[#23475F] transition-transform active:scale-90"
 		>
