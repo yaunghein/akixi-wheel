@@ -21,8 +21,9 @@ export const initialFormInputs: TFormInputs = {
 };
 
 class GameState {
+	startState = $state(GAME_STATES_ENUM.SPIN);
 	isOnline = $state(browser ? navigator.onLine : true);
-	current = $state<TPossibleGameState>(GAME_STATES_ENUM.START);
+	current = $state<TPossibleGameState>(this.startState);
 	rotation = $state(0);
 	winSegment = $state<TWheelSegment | null>(null);
 	lastPosition = $state(0);

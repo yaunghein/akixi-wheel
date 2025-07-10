@@ -53,14 +53,6 @@
 		link.click();
 		document.body.removeChild(link);
 	}
-
-	// const bulkDelete: SubmitFunction = ({ formElement, formData, action, cancel, submitter }) => {
-	// 	return async ({ result, update }) => {
-	// 		if (result.type === 'success') {
-	// 			toast.success('Submissions deleted');
-	// 		}
-	// 	};
-	// };
 </script>
 
 <div class="min-h-screen bg-white p-4 text-base">
