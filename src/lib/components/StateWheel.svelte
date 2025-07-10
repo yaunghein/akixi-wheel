@@ -26,7 +26,7 @@
 			<img
 				src="/images/wheel-bg.png"
 				alt=""
-				class="pointer-events-none absolute inset-0 aspect-square w-full -translate-y-[4.5rem] scale-[0.98] opacity-[0.6]"
+				class="pointer-events-none absolute inset-0 aspect-square w-full -translate-y-[4.5rem] scale-[0.98] opacity-[0.6] sm:-translate-y-[3.3rem] sm:scale-[0.99]"
 			/>
 			<div
 				class="pointer-events-none absolute inset-0 h-full w-full"
