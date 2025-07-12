@@ -21,7 +21,8 @@
 		submissions.map((sub: any) => ({
 			first_name: sub.first_name || 'N/A',
 			last_name: sub.last_name || 'N/A',
-			email: sub.email || 'N/A'
+			email: sub.email || 'N/A',
+			stay_in_touch: sub.stay_in_touch || 'N/A'
 		}))
 	);
 
@@ -38,7 +39,12 @@
 		const csvContent = [
 			headers.join(','),
 			...formattedSubmissions.map((sub) =>
-				[`"${sub.first_name}"`, `"${sub.last_name}"`, `"${sub.email}"`].join(',')
+				[
+					`"${sub.first_name}"`,
+					`"${sub.last_name}"`,
+					`"${sub.email}"`,
+					`"${sub.stay_in_touch}"`
+				].join(',')
 			)
 		].join('\n');
 
@@ -104,7 +110,10 @@
 								<th class="font-apertura-medium px-3 py-2 text-left text-sm text-black">
 									Last Name
 								</th>
-								<th class="font-apertura-medium px-3 py-2 text-left text-sm text-black"> Email </th>
+								<th class="font-apertura-medium px-3 py-2 text-left text-sm text-black">Email</th>
+								<th class="font-apertura-medium px-3 py-2 text-left text-sm text-black"
+									>Stay in Touch</th
+								>
 							</tr>
 						</thead>
 						<tbody>
@@ -123,6 +132,11 @@
 									<td class="px-3 py-2">
 										<span class="text-sm text-gray-600">
 											{submission.email}
+										</span>
+									</td>
+									<td class="px-3 py-2">
+										<span class="text-sm text-gray-600">
+											{submission.stay_in_touch === true ? 'Yes' : 'No'}
 										</span>
 									</td>
 								</tr>
