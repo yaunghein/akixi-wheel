@@ -15,6 +15,10 @@
 	const gameState = getGameState();
 
 	const handleUserResult = async () => {
+		if (gameState.startState === GAME_STATES_ENUM.SPIN) {
+			return;
+		}
+
 		const data = {
 			event: {
 				_type: 'reference',
