@@ -169,10 +169,10 @@
 					>
 						<span class="sr-only">Start from Spin</span>
 						<div
-							class="bg-electric-indigo absolute top-1/2 h-[4rem] w-[4rem] -translate-y-1/2 rounded-full transition-all {gameState.startState ===
+							class="absolute top-1/2 h-[4rem] w-[4rem] -translate-y-1/2 rounded-full transition-all {gameState.startState ===
 							GAME_STATES_ENUM.START
-								? 'left-[0.5rem]'
-								: 'left-[5.5rem]'}"
+								? 'left-[0.5rem] bg-[#b1b1b1]'
+								: 'bg-electric-indigo left-[5.5rem]'}"
 						></div>
 					</button>
 				</div>
