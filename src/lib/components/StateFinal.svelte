@@ -154,22 +154,24 @@
 			</button>
 		</div>
 
-		<!-- <div class="w-[56rem]">
-			<button
-				in:scale={{ duration: 500, start: 1.05, easing: bounceOut }}
-				out:scale={{ duration: 300, start: 1.05 }}
-				onclick={() => {
-					audioState.play('click');
-					gameState.selectedAnswer = null;
-					gameState.isCorrect = false;
-					gameState.winSegment = null;
-					gameState.current = GAME_STATES_ENUM.SPIN;
-				}}
-				class="font-apertura-black bg-vivid-sky w-full cursor-pointer rounded-[2.29rem] py-12 text-[6.11rem] leading-none text-[#23475F] transition-transform active:scale-90"
-			>
-				<span class="inline-block translate-y-1">Spin Again</span>
-			</button>
-		</div> -->
+		{#if gameState.startState !== GAME_STATES_ENUM.SPIN}
+			<div class="w-[56rem]">
+				<button
+					in:scale={{ duration: 500, start: 1.05, easing: bounceOut }}
+					out:scale={{ duration: 300, start: 1.05 }}
+					onclick={() => {
+						audioState.play('click');
+						gameState.selectedAnswer = null;
+						gameState.isCorrect = false;
+						gameState.winSegment = null;
+						gameState.current = GAME_STATES_ENUM.SPIN;
+					}}
+					class="font-apertura-black bg-vivid-sky w-full cursor-pointer rounded-[2.29rem] py-12 text-[6.11rem] leading-none text-[#23475F] transition-transform active:scale-90"
+				>
+					<span class="inline-block translate-y-1">Spin Again</span>
+				</button>
+			</div>
+		{/if}
 
 		<div class="w-[56rem]">
 			<button
