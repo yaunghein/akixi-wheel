@@ -1,13 +1,15 @@
 <script lang="ts">
 	import { getGameState } from '$lib/states/game.svelte';
+	import { getAudioState } from '$lib/states/audio.svelte';
 	import TextSpinAndWin from '$lib/components/TextSpinAndWin.svelte';
 	import WheelBackgroundWithDots from '$lib/components/WheelBackgroundWithDots.svelte';
 	import Indicator from '$lib/components/Indicator.svelte';
 	import Wheel from '$lib/components/Wheel.svelte';
 
-	let { data } = $props();
+	export let data: any;
 
 	const gameState = getGameState();
+	const audioState = getAudioState();
 </script>
 
 <div class="relative flex h-full flex-col items-center text-center">
@@ -43,5 +45,18 @@
 				<Indicator />
 			</div>
 		</div>
+		
+		<!-- View All Questions Button -->
+		<!-- <div class="flex justify-center mt-8">
+			<button
+				on:mouseup={() => {
+					audioState.play('click');
+					window.location.href = '/questlist';
+				}}
+				class="bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 rounded-xl px-6 py-3 transition-all duration-300 active:scale-95"
+			>
+				<span class="text-[2rem] font-apertura-medium text-white">📋 View All Questions</span>
+			</button>
+		</div> -->
 	</div>
 </div>

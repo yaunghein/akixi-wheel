@@ -199,9 +199,7 @@
 					out:scale={{ duration: 300, start: 1.05 }}
 					onclick={() => {
 						audioState.play('click');
-						if (!validateForm()) {
-							return;
-						}
+						
 						gameState.current = GAME_STATES_ENUM.SPIN;
 					}}
 					class="font-apertura-black bg-vivid-sky cursor-pointer rounded-[2.29rem] px-48 py-12 text-[6.11rem] leading-none text-[#23475F] transition-transform active:scale-90"

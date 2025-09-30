@@ -13,11 +13,14 @@
 	import Logo from '$lib/components/Logo.svelte';
 	import AudioController from '$lib/components/AudioController.svelte';
 	import BackButton from '$lib/components/BackButton.svelte';
+	import StateQRLink from '$lib/components/StateQRLink.svelte';
 
 	let { data } = $props();
 
 	let { initial } = data;
 	const query = useQuery<any>(eventQuery, {}, { initial });
+	console.log(query);
+	
 
 	const audioState = getAudioState();
 	const gameState = getGameState();
@@ -79,7 +82,8 @@
 		{#if gameState.showWheel}
 			<StateWheel data={$query.data} />
 		{:else if gameState.showForm}
-			<StateForm />
+			<!-- <StateForm /> -->
+			 <StateQRLink />
 		{:else if gameState.showLanded}
 			<StateLanded />
 		{:else if gameState.showQuiz}

@@ -2,7 +2,7 @@ import { browser } from '$app/environment';
 import { getContext, setContext } from 'svelte';
 
 const GAME_KEY = Symbol('AKIXI_WHEEL');
-const GAME_STATES = ['start', 'form', 'spin', 'landed', 'quiz', 'result', 'final'] as const;
+const GAME_STATES = ['start', 'form', 'spin', 'landed', 'quiz', 'result', 'final', 'quiz_list'] as const;
 export const GAME_STATES_ENUM = {
 	START: GAME_STATES[0],
 	FORM: GAME_STATES[1],
@@ -10,7 +10,8 @@ export const GAME_STATES_ENUM = {
 	LANDED: GAME_STATES[3],
 	QUIZ: GAME_STATES[4],
 	RESULT: GAME_STATES[5],
-	FINAL: GAME_STATES[6]
+	FINAL: GAME_STATES[6],
+	QUIZ_LIST: GAME_STATES[7]
 };
 
 export const initialFormInputs: TFormInputs = {
@@ -37,6 +38,7 @@ class GameState {
 	showBackgroundSoundToggle = $derived(this.is('start'));
 	showWheel = $derived(this.is('start', 'spin'));
 	showForm = $derived(this.is('form'));
+	showQuizList = $derived(this.is('quiz_list'));
 	showLanded = $derived(this.is('landed'));
 	showQuiz = $derived(this.is('quiz'));
 	showResult = $derived(this.is('result'));

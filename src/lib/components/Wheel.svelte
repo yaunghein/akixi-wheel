@@ -201,6 +201,7 @@
 
 		if (gameState.current === GAME_STATES_ENUM.START) {
 			gameState.move(+1);
+			// gameState.move(+7)
 			return;
 		}
 
