@@ -87,10 +87,10 @@
 								{#each segment.question.choices as choice, choiceIndex}
 									{@const isCorrect = getChoiceLetter(choiceIndex) === segment.question.correct}
 									<div class="flex items-center gap-4 p-4 rounded-xl bg-transparent">
-										<span class="text-[2.5rem] font-apertura-medium {isCorrect ? 'text-[#1CD2FA]' : 'text-white'} min-w-[2rem]">
+										<span class="text-[1.8rem] font-apertura-medium {isCorrect ? 'text-[#1CD2FA]' : 'text-white'} min-w-[2rem]">
 											{getChoiceLetter(choiceIndex)}.
 										</span>
-										<span class="text-[2.5rem] font-apertura-medium {isCorrect ? 'text-[#1CD2FA]' : 'text-white'} flex-1">
+										<span class="text-[1.8rem] font-apertura-medium {isCorrect ? 'text-[#1CD2FA]' : 'text-white'} flex-1">
 											{choice}
 										</span>
 									</div>
