@@ -18,7 +18,7 @@
 	<div class="relative flex h-full w-full flex-col gap-8 p-8 overflow-y-auto">
 		<img src="/images/qr-code.svg" alt="QR Code" class="mx-auto my-8 w-4/5 aspect-square" />
 		<p class="mx-auto mt-8 max-w-[70rem] text-center text-[4.58rem] leading-[1.2]">
-			I have summited my details <input type="checkbox" name="qr-checkbox" class="mx-2 w-20 h-20" bind:checked={isChecked} />
+			<span class="[text-shadow:0px_3px_4px_black]">I have summited my details</span> <input type="checkbox" name="qr-checkbox" class="mx-2 w-20 h-20" bind:checked={isChecked} />
 		</p>
 		<button
 			in:scale={{ duration: 500, start: 1.05, easing: bounceOut }}
@@ -36,7 +36,7 @@
 			class:bg-[#646464]={!isChecked}
 			class:text-white={!isChecked}
 		>
-			<span class="inline-block translate-y-1">Play</span>
+			<span class="inline-block translate-y-1" class:text-[#515151]={!isChecked} class:text-[#23475F]={isChecked}>Play</span>
 		</button>
 	</div>
 </div>
