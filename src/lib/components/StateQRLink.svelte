@@ -16,7 +16,7 @@
 		<TextSpinAndWin />
 	</div>
 	<div class="relative flex h-full w-full flex-col gap-8 p-8 overflow-y-auto">
-		<img src="/images/qr-code.svg" alt="QR Code" class="mx-auto my-8 w-4/5 aspect-square" />
+		<img src="/images/qr-code.svg" alt="QR Code" class="mx-auto my-8 w-2/5 aspect-square" />
 		<p class="mx-auto mt-8 max-w-[70rem] text-center text-[4.58rem] leading-[1.2]">
 			<span class="[text-shadow:0px_3px_4px_black]">I have summited my details</span> <input type="checkbox" name="qr-checkbox" class="mx-2 w-20 h-20" bind:checked={isChecked} />
 		</p>
