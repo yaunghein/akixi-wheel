@@ -27,4 +27,5 @@
 			<span class="inline-block translate-y-1">Continue</span>
 		</button>
 	</div>
+	<div class="h-2/5"></div>
 {/if}

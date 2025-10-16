@@ -71,7 +71,7 @@
 		<source src={$query.data.bgVideo.url} type="video/mp4" />
 		<track kind="captions" />
 	</video>
-	<div class="relative flex aspect-[4/7] w-full flex-col overflow-hidden pt-[13rem]">
+	<div class="relative flex aspect-[4/7] w-full flex-col overflow-hidden pt-[1rem]">
 		<img
 			src={$query.data.logo.url}
 			alt=""

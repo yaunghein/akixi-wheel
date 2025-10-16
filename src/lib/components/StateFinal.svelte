@@ -92,11 +92,11 @@
 			<track kind="captions" />
 		</video>
 
-		<div class="font-apertura-black text-aquamarineo text-shadow-small text-[10.08rem]">
+		<div class="font-apertura-black text-aquamarineo text-shadow-small text-[5rem] translate-y-[-10rem]">
 			Congratulations!
 		</div>
 		<div
-			class="text-aquamarineo text-shadow-small mx-auto mt-10 max-w-[55rem] text-[9.93rem] leading-[1]"
+			class="text-aquamarineo text-shadow-small mx-auto mt-10 max-w-[55rem] text-[6rem] leading-[1] translate-y-[-10rem]"
 		>
 			Collect your prize
 		</div>
@@ -119,22 +119,23 @@
 			<span class="inline-block translate-y-1">Start over</span>
 		</button>
 	</div>
+	<div class="h-2/5"></div>
 {:else}
 	<div class="relative mb-auto text-center leading-none">
 		<div
 			use:lottiePlayer={'/lotties/hard-luck.json'}
-			class="mx-auto mb-20 aspect-square w-[30.09rem] shrink-0"
+			class="mx-auto mb-20 aspect-square w-[20.09rem] shrink-0"
 		></div>
-		<div class="font-apertura-black text-aquamarineo text-shadow-small text-[10.08rem]">
+		<div class="font-apertura-black text-aquamarineo text-shadow-small text-[6rem]">
 			Hard luck
 		</div>
 		<div
-			class="text-aquamarineo text-shadow-small mx-auto mt-10 max-w-[55rem] text-[9.93rem] leading-[1]"
+			class="text-aquamarineo text-shadow-small mx-auto mt-10 max-w-[55rem] text-[5rem] leading-[1]"
 		>
 			Please try again
 		</div>
 	</div>
-	<div class="relative mb-auto flex flex-col items-center justify-center gap-10">
+	<div class="relative mb-auto flex flex-col items-center justify-center gap-10 mt-10">
 		<div class="w-[56rem]">
 			<button
 				in:scale={{ duration: 500, start: 1.05, easing: bounceOut }}
@@ -189,4 +190,5 @@
 			</button>
 		</div>
 	</div>
+	<div class="h-2/5"></div>
 {/if}
